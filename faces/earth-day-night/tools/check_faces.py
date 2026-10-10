@@ -13,6 +13,10 @@ from solar import truth_mask
 from params import EARTH_R
 
 XML, D, OUTDIR = sys.argv[1], sys.argv[2], sys.argv[3]
+# Limits for the day/night mask versus a precise solar calculation (fraction of full opacity).
+# v1.2 measures at most 0.011 mean and 0.146 at the 99th percentile; these leave headroom.
+MAX_MEAN, MAX_P99 = 0.02, 0.25
+failures = 0
 cases = [  # local time, utc offset
     ("2026-10-08T08:00:00", 1), ("2026-10-08T13:00:00", 1), ("2026-10-08T18:30:00", 1),
     ("2026-10-08T23:02:00", 1), ("2026-06-21T12:00:00", 1), ("2026-06-21T23:59:00", 1),
@@ -25,4 +29,8 @@ for iso, off in cases:
     truth, inside = truth_mask(utc, 2 * EARTH_R)
     got = wff_sim.captured["terminator"][..., 3]
     err = np.abs(truth - got)[inside]
-    print(f"{iso} mean_err={err.mean():.3f} p99={np.percentile(err, 99):.3f}")
+    mean, p99 = err.mean(), np.percentile(err, 99)
+    ok = mean <= MAX_MEAN and p99 <= MAX_P99
+    failures += not ok
+    print(f"{iso} mean_err={mean:.3f} p99={p99:.3f}{'' if ok else '  <-- TOO FAR FROM TRUE SUN POSITION'}")
+sys.exit(1 if failures else 0)
