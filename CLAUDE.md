@@ -20,6 +20,10 @@ Guidance for Claude when working in this repository of Wear OS watch faces. The 
   4. increase `versionCode` and `versionName`
   5. update the face's README and GUIDE, including the version history
 - Extend `wff_sim.py` when a face uses an element it doesn't support yet. It raises an error on unknown elements by design.
+- **Work through pull requests.** `main` is protected: no direct pushes or force-pushes. Push a `claude/<topic>` branch, open a PR through the REST API (`gh pr create` uses GraphQL, which this environment blocks), and wait for the **Checks** workflow to pass before merging.
+  - Merge only when the owner has asked for the change to go in. Otherwise leave the PR open for them.
+  - Never call the merge endpoint on a PR you meant to close. GitHub merges closed PRs.
+- **Commit generated files with the scripts that made them.** CI rebuilds each face and fails if the committed images, XML or strings differ from a fresh build. CI pins `numpy` and `pillow` in `tools/requirements.txt`, so use the same versions locally.
 - Sandboxes usually can't reach Gradle or Maven, so the owner builds and installs. Ask for `logcat` output (see `docs/install-on-galaxy-watch.md`) when something fails on the watch.
 
 ## Adding a face

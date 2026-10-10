@@ -30,3 +30,4 @@ while d < dt.date(2029, 1, 1):
             print("MISMATCH", d, style, got, want)
     d += dt.timedelta(days=1)
 print("checked 3 years x 2 layouts, mismatches:", bad)
+sys.exit(1 if bad else 0)

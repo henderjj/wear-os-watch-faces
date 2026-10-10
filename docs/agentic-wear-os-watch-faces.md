@@ -114,10 +114,15 @@ Use, or have the agent extend, a **small renderer that reads the generated XML**
 
 The simulator is the agent's interpretation of the format, not the real renderer. Use it to catch logic and layout mistakes, and expect the watch to differ on things the documentation leaves vague.
 
-### 4.6 Package and hand over
+### 4.6 Let CI repeat the checks
+Run the same checks automatically on every pull request. In this repository, `.github/workflows/checks.yml` lints and validates every face and rebuilds the ones that have scripts. It then fails if the committed files don't match the rebuild (`tools/check_generated.py`).
+
+That last check enforces "generate, don't hand-edit". It also catches a script change that was committed without rebuilding. Make the workflow a required status check on `main`, and nothing broken can be merged, whether you or the agent wrote it.
+
+### 4.7 Package and hand over
 In this repository, `python tools/new_face.py <slug> "<Name>"` starts a new face from `templates/analog`, a copy of Google's SimpleAnalog sample. Otherwise, copy the build setup from a Google sample: `hasCode="false"`, the `com.google.wear.watchface.format.version` property, `res/raw/watchface.xml`, `res/xml/watch_face_info.xml` with a `preview` drawable, and `drawable-nodpi/` for images. Increase `versionCode` with each release. Include a README with install steps written for your operating system.
 
-### 4.7 Close the loop with real errors
+### 4.8 Close the loop with real errors
 When something goes wrong on the watch, a description helps ("it drops out of customise mode"), but the runtime's own log is better:
 
 ```

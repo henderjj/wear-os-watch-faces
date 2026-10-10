@@ -19,9 +19,11 @@ Watch faces for Wear OS, built with Claude, along with the guides and scripts us
 │   └── install-on-galaxy-watch.md       install, update and debug any face (Windows)
 ├── tools/                       shared scripts (Python 3.9+, numpy, pillow)
 │   ├── validate_wff.py          checks XML against Google's official schema
+│   ├── check_generated.py       checks committed images/XML match a fresh rebuild
 │   ├── wff_lint.py              checks the schema can't do (nested settings, missing images…)
 │   ├── wff_sim.py               renders a face from its XML for previews and tests
 │   └── new_face.py              starts a new face from the template
+├── .github/workflows/checks.yml automatic checks on every pull request
 ├── templates/
 │   └── analog/                  Google's SimpleAnalog sample, the starting point for new faces
 ├── faces/
@@ -61,6 +63,12 @@ This creates `faces/moon-phase/` with its own package name, so it installs along
 - **One folder per face** under `faces/`, each a complete Gradle project with its own `applicationId`. Open the face's folder in Android Studio, not the repository root.
 - **Generated files aren't edited by hand.** Where a face has a `tools/` folder, its `watchface.xml`, `strings.xml` and images come from those scripts. Change the scripts and rebuild.
 - **Before each install or release:** run `validate_wff.py` and `wff_lint.py` (a face's `build.py` may do the lint for you), and increase `versionCode` and `versionName` in `watchface/build.gradle.kts`.
+- **Changes go through pull requests.** `main` is protected, and the **Checks** workflow runs on every PR and every push to `main`. For each face and the template it:
+  - lints the XML and validates it against Google's schema
+  - rebuilds every face that has a `tools/build.py` and runs that face's own checks
+  - fails if the committed images or XML differ from a fresh build
+
+  Each run's preview renders are attached as a downloadable **previews** artifact.
 - **Releases** can be tagged as `<face>-v<version>`, for example `earth-day-night-v1.2.0`.
 
 ## Licences
