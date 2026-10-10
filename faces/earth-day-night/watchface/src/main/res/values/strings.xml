@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="watch_face_name">Earth Day &amp; Night</string>
+  <string name="cfg_hand_style">Hand style</string>
+  <string name="cfg_hand_color">Hand colour</string>
+  <string name="cfg_accent">Seconds hand colour</string>
+  <string name="cfg_seconds">Seconds hand</string>
+  <string name="cfg_date">Date</string>
+  <string name="style_dauphine">Dauphine</string>
+  <string name="style_sword">Sword</string>
+  <string name="style_baton">Baton</string>
+  <string name="style_skeleton">Skeleton</string>
+  <string name="metal_0">White</string>
+  <string name="metal_1">Steel</string>
+  <string name="metal_2">Gold</string>
+  <string name="metal_3">Rose gold</string>
+  <string name="accent_0">Orange</string>
+  <string name="accent_1">Red</string>
+  <string name="accent_2">Yellow</string>
+  <string name="accent_3">Blue</string>
+  <string name="accent_4">White</string>
+  <string name="date_split">Day and date apart</string>
+  <string name="date_single">One window at 6</string>
+  <string name="date_off">Off</string>
+</resources>

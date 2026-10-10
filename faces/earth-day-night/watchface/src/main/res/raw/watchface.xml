@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Earth Day & Night - an analogue watch face for Wear OS (Watch Face Format v1).
+
+  The Earth is shown as seen from space above 0 N, 0 E (the equator at
+  Greenwich). Two pre-rendered views are stacked: the night side (city lights) underneath
+  and the sunlit side on top. The sunlit layer is clipped by a soft mask that
+  marks where the Sun is up. The mask's shape depends only on how far the Sun
+  is from the viewing direction, so 37 shapes are pre-rendered
+  (5 degrees apart); the two nearest are blended and the whole
+  mask is rotated to point at the Sun.
+
+  The Sun's position is computed from UTC time and the day of the year:
+  declination (season) plus the equation of time.
+
+  Customisation (long-press the face > Customise): hand style, hand colour,
+  seconds hand colour, seconds hand on/off, and date layout.
+
+  Imagery: NASA Blue Marble and NASA Earth at Night (public domain).
+  Date lettering: Barlow Condensed (SIL Open Font License), pre-rendered.
+-->
+<WatchFace width="450" height="450">
+  <Metadata key="CLOCK_TYPE" value="ANALOG" />
+  <Metadata key="PREVIEW_TIME" value="10:08:32" />
+  <UserConfigurations>
+    <ListConfiguration id="handStyle" displayName="cfg_hand_style" screenReaderText="cfg_hand_style" defaultValue="dauphine">
+      <ListOption id="dauphine" displayName="style_dauphine" />
+      <ListOption id="sword" displayName="style_sword" />
+      <ListOption id="baton" displayName="style_baton" />
+      <ListOption id="skeleton" displayName="style_skeleton" />
+    </ListConfiguration>
+    <ColorConfiguration id="handTint" displayName="cfg_hand_color" screenReaderText="cfg_hand_color" defaultValue="0">
+      <ColorOption id="0" displayName="metal_0" colors="#FFFFFFFF" />
+      <ColorOption id="1" displayName="metal_1" colors="#FFD6DBE2" />
+      <ColorOption id="2" displayName="metal_2" colors="#FFF0CD78" />
+      <ColorOption id="3" displayName="metal_3" colors="#FFF0B6A0" />
+    </ColorConfiguration>
+    <ColorConfiguration id="accentTint" displayName="cfg_accent" screenReaderText="cfg_accent" defaultValue="0">
+      <ColorOption id="0" displayName="accent_0" colors="#FFFF7A28" />
+      <ColorOption id="1" displayName="accent_1" colors="#FFE82C2C" />
+      <ColorOption id="2" displayName="accent_2" colors="#FFFFCE28" />
+      <ColorOption id="3" displayName="accent_3" colors="#FF409CFF" />
+      <ColorOption id="4" displayName="accent_4" colors="#FFF5F5F5" />
+    </ColorConfiguration>
+    <BooleanConfiguration id="seconds" displayName="cfg_seconds" screenReaderText="cfg_seconds" defaultValue="TRUE" />
+    <ListConfiguration id="dateStyle" displayName="cfg_date" screenReaderText="cfg_date" defaultValue="split">
+      <ListOption id="split" displayName="date_split" />
+      <ListOption id="single" displayName="date_single" />
+      <ListOption id="off" displayName="date_off" />
+    </ListConfiguration>
+  </UserConfigurations>
+  <Scene backgroundColor="#000000">
+
+    <!-- Starfield -->
+    <PartImage x="0" y="0" width="450" height="450">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <Image resource="space" />
+    </PartImage>
+
+    <!-- Thin atmosphere glow around the limb -->
+    <PartImage x="0" y="0" width="450" height="450">
+      <Variant mode="AMBIENT" target="alpha" value="64" />
+      <Image resource="atmosphere" />
+    </PartImage>
+
+    <!-- Night side: always drawn; the day side covers it where the Sun is up -->
+    <PartImage x="29" y="29" width="392" height="392">
+      <Variant mode="AMBIENT" target="alpha" value="140" />
+      <Image resource="earth_night" />
+    </PartImage>
+
+    <!-- Day side, clipped by the terminator mask -->
+    <Group name="daylight" x="29" y="29" width="392" height="392">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <PartImage x="0" y="0" width="392" height="392">
+        <Image resource="earth_day" />
+      </PartImage>
+      <Group name="terminator" x="0" y="0" width="392" height="392" pivotX="0.5" pivotY="0.5" renderMode="MASK">
+        <!-- Rotate the mask so its bright side faces the Sun (clockwise from 3 o'clock) -->
+        <Transform target="angle" value="(deg(acos(clamp((0 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * sin(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))) / (sqrt((0 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * sin(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))) * (0 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * sin(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))) + (sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))) * (sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0))))) + 0.000001), -1, 1))) * ((0 - (sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0))))) / (abs((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 - cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0))))) + 0.000000001)))" />
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 0), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 0) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_00" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 1), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 1) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_01" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 2), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 2) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_02" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 3), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 3) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_03" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 4), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 4) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_04" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 5), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 5) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_05" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 6), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 6) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_06" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 7), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 7) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_07" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 8), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 8) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_08" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 9), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 9) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_09" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 10), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 10) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_10" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 11), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 11) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_11" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 12), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 12) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_12" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 13), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 13) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_13" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 14), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 14) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_14" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 15), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 15) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_15" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 16), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 16) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_16" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 17), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 17) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_17" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 18), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 18) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_18" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 19), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 19) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_19" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 20), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 20) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_20" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 21), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 21) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_21" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 22), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 22) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_22" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 23), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 23) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_23" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 24), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 24) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_24" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 25), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 25) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_25" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 26), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 26) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_26" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 27), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 27) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_27" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 28), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 28) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_28" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 29), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 29) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_29" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 30), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 30) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_30" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 31), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 31) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_31" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 32), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 32) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_32" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 33), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 33) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_33" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 34), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 34) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_34" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 35), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 35) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_35" />
+          </PartImage>
+          <PartImage x="0" y="0" width="392" height="392">
+            <Transform target="alpha" value="255 * clamp(1 - ((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 36), 0, 1) * clamp((((deg(acos(clamp((sin(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 0.000000 + cos(rad(23.44 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81))))) * 1.000000 * cos(rad(15 * ((([UTC_TIMESTAMP] % 86400000) / 3600000.0) - 12) + (9.87 * sin(2 * rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 7.53 * cos(rad(0.9863014 * ([DAY_OF_YEAR] - 81))) - 1.5 * sin(rad(0.9863014 * ([DAY_OF_YEAR] - 81)))) / 4 + (0.0)))), -1, 1))) / 5) - 36) + 1) * 1000, 0, 1)" />
+            <Image resource="mask_36" />
+          </PartImage>
+      </Group>
+    </Group>
+
+    <!-- Minute track -->
+    <PartImage x="0" y="0" width="450" height="450">
+      <Variant mode="AMBIENT" target="alpha" value="150" />
+      <Image resource="dial" />
+    </PartImage>
+
+    <!-- Day and date windows (chosen by number, so always English capitals) -->
+    <ListConfiguration id="dateStyle">
+      <ListOption id="split">
+        <Group name="date_split" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="190" />
+          <PartImage x="41" y="210" width="54" height="30">
+            <Image resource="frame_day" />
+          </PartImage>
+          <PartImage x="333" y="210" width="76" height="30">
+            <Image resource="frame_date" />
+          </PartImage>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY_OF_WEEK] == 1</Expression>
+              <Expression name="c1">[DAY_OF_WEEK] == 2</Expression>
+              <Expression name="c2">[DAY_OF_WEEK] == 3</Expression>
+              <Expression name="c3">[DAY_OF_WEEK] == 4</Expression>
+              <Expression name="c4">[DAY_OF_WEEK] == 5</Expression>
+              <Expression name="c5">[DAY_OF_WEEK] == 6</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_6" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="41" y="210" width="54" height="30">
+                <Image resource="day_7" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY] &lt; 10</Expression>
+              <Expression name="c1">[DAY] &lt; 20</Expression>
+              <Expression name="c2">[DAY] &lt; 30</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="343" y="210" width="10" height="30">
+                <Image resource="dig_0" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="343" y="210" width="10" height="30">
+                <Image resource="dig_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="343" y="210" width="10" height="30">
+                <Image resource="dig_2" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="343" y="210" width="10" height="30">
+                <Image resource="dig_3" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY] % 10 == 0</Expression>
+              <Expression name="c1">[DAY] % 10 == 1</Expression>
+              <Expression name="c2">[DAY] % 10 == 2</Expression>
+              <Expression name="c3">[DAY] % 10 == 3</Expression>
+              <Expression name="c4">[DAY] % 10 == 4</Expression>
+              <Expression name="c5">[DAY] % 10 == 5</Expression>
+              <Expression name="c6">[DAY] % 10 == 6</Expression>
+              <Expression name="c7">[DAY] % 10 == 7</Expression>
+              <Expression name="c8">[DAY] % 10 == 8</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_0" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c6">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_6" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c7">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_7" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c8">
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_8" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="353" y="210" width="10" height="30">
+                <Image resource="dig_9" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[MONTH] == 1</Expression>
+              <Expression name="c1">[MONTH] == 2</Expression>
+              <Expression name="c2">[MONTH] == 3</Expression>
+              <Expression name="c3">[MONTH] == 4</Expression>
+              <Expression name="c4">[MONTH] == 5</Expression>
+              <Expression name="c5">[MONTH] == 6</Expression>
+              <Expression name="c6">[MONTH] == 7</Expression>
+              <Expression name="c7">[MONTH] == 8</Expression>
+              <Expression name="c8">[MONTH] == 9</Expression>
+              <Expression name="c9">[MONTH] == 10</Expression>
+              <Expression name="c10">[MONTH] == 11</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_6" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c6">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_7" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c7">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_8" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c8">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_9" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c9">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_10" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c10">
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_11" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="369" y="210" width="32" height="30">
+                <Image resource="mon_12" />
+              </PartImage>
+            </Default>
+          </Condition>
+        </Group>
+      </ListOption>
+      <ListOption id="single">
+        <Group name="date_single" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="190" />
+          <PartImage x="166" y="357" width="118" height="30">
+            <Image resource="frame_full" />
+          </PartImage>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY_OF_WEEK] == 1</Expression>
+              <Expression name="c1">[DAY_OF_WEEK] == 2</Expression>
+              <Expression name="c2">[DAY_OF_WEEK] == 3</Expression>
+              <Expression name="c3">[DAY_OF_WEEK] == 4</Expression>
+              <Expression name="c4">[DAY_OF_WEEK] == 5</Expression>
+              <Expression name="c5">[DAY_OF_WEEK] == 6</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_6" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="176" y="357" width="34" height="30">
+                <Image resource="dayr_7" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY] &lt; 10</Expression>
+              <Expression name="c1">[DAY] &lt; 20</Expression>
+              <Expression name="c2">[DAY] &lt; 30</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="218" y="357" width="10" height="30">
+                <Image resource="dig_0" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="218" y="357" width="10" height="30">
+                <Image resource="dig_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="218" y="357" width="10" height="30">
+                <Image resource="dig_2" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="218" y="357" width="10" height="30">
+                <Image resource="dig_3" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[DAY] % 10 == 0</Expression>
+              <Expression name="c1">[DAY] % 10 == 1</Expression>
+              <Expression name="c2">[DAY] % 10 == 2</Expression>
+              <Expression name="c3">[DAY] % 10 == 3</Expression>
+              <Expression name="c4">[DAY] % 10 == 4</Expression>
+              <Expression name="c5">[DAY] % 10 == 5</Expression>
+              <Expression name="c6">[DAY] % 10 == 6</Expression>
+              <Expression name="c7">[DAY] % 10 == 7</Expression>
+              <Expression name="c8">[DAY] % 10 == 8</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_0" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c6">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_6" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c7">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_7" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c8">
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_8" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="228" y="357" width="10" height="30">
+                <Image resource="dig_9" />
+              </PartImage>
+            </Default>
+          </Condition>
+          <Condition>
+            <Expressions>
+              <Expression name="c0">[MONTH] == 1</Expression>
+              <Expression name="c1">[MONTH] == 2</Expression>
+              <Expression name="c2">[MONTH] == 3</Expression>
+              <Expression name="c3">[MONTH] == 4</Expression>
+              <Expression name="c4">[MONTH] == 5</Expression>
+              <Expression name="c5">[MONTH] == 6</Expression>
+              <Expression name="c6">[MONTH] == 7</Expression>
+              <Expression name="c7">[MONTH] == 8</Expression>
+              <Expression name="c8">[MONTH] == 9</Expression>
+              <Expression name="c9">[MONTH] == 10</Expression>
+              <Expression name="c10">[MONTH] == 11</Expression>
+            </Expressions>
+            <Compare expression="c0">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_1" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c1">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_2" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c2">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_3" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c3">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_4" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c4">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_5" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c5">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_6" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c6">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_7" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c7">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_8" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c8">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_9" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c9">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_10" />
+              </PartImage>
+            </Compare>
+            <Compare expression="c10">
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_11" />
+              </PartImage>
+            </Compare>
+            <Default>
+              <PartImage x="244" y="357" width="32" height="30">
+                <Image resource="mon_12" />
+              </PartImage>
+            </Default>
+          </Condition>
+        </Group>
+      </ListOption>
+    </ListConfiguration>
+
+    <!-- Hour and minute hands: style x colour -->
+    <ListConfiguration id="handStyle">
+      <ListOption id="dauphine">
+        <Group name="hands_dauphine" x="0" y="0" width="450" height="450">
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="halo_hour_dauphine" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="body_hour_dauphine" tintColor="[CONFIGURATION.handTint.0]" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="detail_hour_dauphine" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="halo_minute_dauphine" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="body_minute_dauphine" tintColor="[CONFIGURATION.handTint.0]" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="detail_minute_dauphine" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+        </Group>
+      </ListOption>
+      <ListOption id="sword">
+        <Group name="hands_sword" x="0" y="0" width="450" height="450">
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="halo_hour_sword" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="body_hour_sword" tintColor="[CONFIGURATION.handTint.0]" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="detail_hour_sword" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="halo_minute_sword" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="body_minute_sword" tintColor="[CONFIGURATION.handTint.0]" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="detail_minute_sword" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+        </Group>
+      </ListOption>
+      <ListOption id="baton">
+        <Group name="hands_baton" x="0" y="0" width="450" height="450">
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="halo_hour_baton" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="body_hour_baton" tintColor="[CONFIGURATION.handTint.0]" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="detail_hour_baton" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="halo_minute_baton" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="body_minute_baton" tintColor="[CONFIGURATION.handTint.0]" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="detail_minute_baton" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+        </Group>
+      </ListOption>
+      <ListOption id="skeleton">
+        <Group name="hands_skeleton" x="0" y="0" width="450" height="450">
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="halo_hour_skeleton" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="body_hour_skeleton" tintColor="[CONFIGURATION.handTint.0]" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="detail_hour_skeleton" x="211" y="108" width="28" height="142" pivotX="0.50000" pivotY="0.82394"></HourHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="halo_minute_skeleton" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="body_minute_skeleton" tintColor="[CONFIGURATION.handTint.0]" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <MinuteHand resource="detail_minute_skeleton" x="212" y="48" width="25" height="204" pivotX="0.52000" pivotY="0.86765"></MinuteHand>
+          </AnalogClock>
+        </Group>
+      </ListOption>
+    </ListConfiguration>
+
+    <!-- Centre cap in the hand colour -->
+    <PartImage x="211" y="211" width="28" height="28">
+      <Image resource="cap_base" />
+    </PartImage>
+    <PartImage tintColor="[CONFIGURATION.handTint.0]" x="211" y="211" width="28" height="28">
+      <Image resource="cap_top" />
+    </PartImage>
+    <PartImage x="211" y="211" width="28" height="28">
+      <Image resource="cap_ring" />
+    </PartImage>
+
+    <!-- Seconds hand and its centre pin, in the accent colour -->
+    <BooleanConfiguration id="seconds">
+      <BooleanOption id="TRUE">
+        <Group name="seconds" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <SecondHand resource="halo_second" x="214" y="32" width="22" height="234" pivotX="0.50000" pivotY="0.82479">
+              <Sweep frequency="15" />
+            </SecondHand>
+          </AnalogClock>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <SecondHand resource="body_second" tintColor="[CONFIGURATION.accentTint.0]" x="214" y="32" width="22" height="234" pivotX="0.50000" pivotY="0.82479">
+              <Sweep frequency="15" />
+            </SecondHand>
+          </AnalogClock>
+          <PartImage tintColor="[CONFIGURATION.accentTint.0]" x="211" y="211" width="28" height="28">
+            <Image resource="pin_ring" />
+          </PartImage>
+          <PartImage x="211" y="211" width="28" height="28">
+            <Image resource="pin_dot" />
+          </PartImage>
+        </Group>
+      </BooleanOption>
+    </BooleanConfiguration>
+  </Scene>
+</WatchFace>
