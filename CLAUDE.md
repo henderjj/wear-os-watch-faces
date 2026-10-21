@@ -11,7 +11,8 @@ Guidance for Claude when working in this repository of Wear OS watch faces. The 
 - **Watch Face Format v1** unless the owner asks otherwise. It runs on Wear OS 4+, so it's safe on the Galaxy Watch 6. Check the schema in `external/watchface/third_party/wff/specification/documents/<version>/` (fetched by `validate_wff.py`) rather than relying on memory.
 - **Never nest a configuration inside another configuration's option** (List, Boolean or Color inside a `ListOption`/`BooleanOption`). Before v5 this makes the watch's Customise screen close. Combine settings with top-level configurations and `tintColor="[CONFIGURATION.<color>.0]"` instead.
 - **Tinted artwork must be pure white.** Put shading and lume in a separate untinted layer above it, because how tinting blends isn't documented.
-- **Prefer numeric data sources** (`[DAY_OF_WEEK]`, `[DAY]`, `[MONTH]`) over locale-dependent strings. Use ranges or integer `%` rather than `==` on floats.
+- **Prefer numeric data sources** (`[DAY_OF_WEEK]`, `[DAY]`, `[MONTH]`) over locale-dependent strings. Use integer arithmetic and exact matches rather than `==` on floats.
+- **Every `Condition` must have exactly one true `Compare` at any time.** WFF shows *every* true `Compare`, so don't rely on order, overlapping ranges or `Default`. Overlapping tens-digit ranges showed 31 OCT on 21 October in v1.2. Test this with `wff_sim.py`'s `condition_hits`.
 - **Generate, don't hand-edit.** Change a face's scripts and run its `tools/build.py`, never the generated XML, strings or PNGs.
 - **Before handing over a build:**
   1. `python tools/validate_wff.py <xml> --version 1`

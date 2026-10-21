@@ -254,6 +254,7 @@
               <Expression name="c3">[DAY_OF_WEEK] == 4</Expression>
               <Expression name="c4">[DAY_OF_WEEK] == 5</Expression>
               <Expression name="c5">[DAY_OF_WEEK] == 6</Expression>
+              <Expression name="c6">[DAY_OF_WEEK] == 7</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="41" y="210" width="54" height="30">
@@ -285,17 +286,18 @@
                 <Image resource="day_6" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c6">
               <PartImage x="41" y="210" width="54" height="30">
                 <Image resource="day_7" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
-              <Expression name="c0">[DAY] &lt; 10</Expression>
-              <Expression name="c1">[DAY] &lt; 20</Expression>
-              <Expression name="c2">[DAY] &lt; 30</Expression>
+              <Expression name="c0">([DAY] - ([DAY] % 10)) == 0</Expression>
+              <Expression name="c1">([DAY] - ([DAY] % 10)) == 10</Expression>
+              <Expression name="c2">([DAY] - ([DAY] % 10)) == 20</Expression>
+              <Expression name="c3">([DAY] - ([DAY] % 10)) == 30</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="343" y="210" width="10" height="30">
@@ -312,23 +314,24 @@
                 <Image resource="dig_2" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c3">
               <PartImage x="343" y="210" width="10" height="30">
                 <Image resource="dig_3" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
-              <Expression name="c0">[DAY] % 10 == 0</Expression>
-              <Expression name="c1">[DAY] % 10 == 1</Expression>
-              <Expression name="c2">[DAY] % 10 == 2</Expression>
-              <Expression name="c3">[DAY] % 10 == 3</Expression>
-              <Expression name="c4">[DAY] % 10 == 4</Expression>
-              <Expression name="c5">[DAY] % 10 == 5</Expression>
-              <Expression name="c6">[DAY] % 10 == 6</Expression>
-              <Expression name="c7">[DAY] % 10 == 7</Expression>
-              <Expression name="c8">[DAY] % 10 == 8</Expression>
+              <Expression name="c0">([DAY] % 10) == 0</Expression>
+              <Expression name="c1">([DAY] % 10) == 1</Expression>
+              <Expression name="c2">([DAY] % 10) == 2</Expression>
+              <Expression name="c3">([DAY] % 10) == 3</Expression>
+              <Expression name="c4">([DAY] % 10) == 4</Expression>
+              <Expression name="c5">([DAY] % 10) == 5</Expression>
+              <Expression name="c6">([DAY] % 10) == 6</Expression>
+              <Expression name="c7">([DAY] % 10) == 7</Expression>
+              <Expression name="c8">([DAY] % 10) == 8</Expression>
+              <Expression name="c9">([DAY] % 10) == 9</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="353" y="210" width="10" height="30">
@@ -375,11 +378,11 @@
                 <Image resource="dig_8" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c9">
               <PartImage x="353" y="210" width="10" height="30">
                 <Image resource="dig_9" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
@@ -394,6 +397,7 @@
               <Expression name="c8">[MONTH] == 9</Expression>
               <Expression name="c9">[MONTH] == 10</Expression>
               <Expression name="c10">[MONTH] == 11</Expression>
+              <Expression name="c11">[MONTH] == 12</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="369" y="210" width="32" height="30">
@@ -450,11 +454,11 @@
                 <Image resource="mon_11" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c11">
               <PartImage x="369" y="210" width="32" height="30">
                 <Image resource="mon_12" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
         </Group>
       </ListOption>
@@ -472,6 +476,7 @@
               <Expression name="c3">[DAY_OF_WEEK] == 4</Expression>
               <Expression name="c4">[DAY_OF_WEEK] == 5</Expression>
               <Expression name="c5">[DAY_OF_WEEK] == 6</Expression>
+              <Expression name="c6">[DAY_OF_WEEK] == 7</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="176" y="357" width="34" height="30">
@@ -503,17 +508,18 @@
                 <Image resource="dayr_6" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c6">
               <PartImage x="176" y="357" width="34" height="30">
                 <Image resource="dayr_7" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
-              <Expression name="c0">[DAY] &lt; 10</Expression>
-              <Expression name="c1">[DAY] &lt; 20</Expression>
-              <Expression name="c2">[DAY] &lt; 30</Expression>
+              <Expression name="c0">([DAY] - ([DAY] % 10)) == 0</Expression>
+              <Expression name="c1">([DAY] - ([DAY] % 10)) == 10</Expression>
+              <Expression name="c2">([DAY] - ([DAY] % 10)) == 20</Expression>
+              <Expression name="c3">([DAY] - ([DAY] % 10)) == 30</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="218" y="357" width="10" height="30">
@@ -530,23 +536,24 @@
                 <Image resource="dig_2" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c3">
               <PartImage x="218" y="357" width="10" height="30">
                 <Image resource="dig_3" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
-              <Expression name="c0">[DAY] % 10 == 0</Expression>
-              <Expression name="c1">[DAY] % 10 == 1</Expression>
-              <Expression name="c2">[DAY] % 10 == 2</Expression>
-              <Expression name="c3">[DAY] % 10 == 3</Expression>
-              <Expression name="c4">[DAY] % 10 == 4</Expression>
-              <Expression name="c5">[DAY] % 10 == 5</Expression>
-              <Expression name="c6">[DAY] % 10 == 6</Expression>
-              <Expression name="c7">[DAY] % 10 == 7</Expression>
-              <Expression name="c8">[DAY] % 10 == 8</Expression>
+              <Expression name="c0">([DAY] % 10) == 0</Expression>
+              <Expression name="c1">([DAY] % 10) == 1</Expression>
+              <Expression name="c2">([DAY] % 10) == 2</Expression>
+              <Expression name="c3">([DAY] % 10) == 3</Expression>
+              <Expression name="c4">([DAY] % 10) == 4</Expression>
+              <Expression name="c5">([DAY] % 10) == 5</Expression>
+              <Expression name="c6">([DAY] % 10) == 6</Expression>
+              <Expression name="c7">([DAY] % 10) == 7</Expression>
+              <Expression name="c8">([DAY] % 10) == 8</Expression>
+              <Expression name="c9">([DAY] % 10) == 9</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="228" y="357" width="10" height="30">
@@ -593,11 +600,11 @@
                 <Image resource="dig_8" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c9">
               <PartImage x="228" y="357" width="10" height="30">
                 <Image resource="dig_9" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
           <Condition>
             <Expressions>
@@ -612,6 +619,7 @@
               <Expression name="c8">[MONTH] == 9</Expression>
               <Expression name="c9">[MONTH] == 10</Expression>
               <Expression name="c10">[MONTH] == 11</Expression>
+              <Expression name="c11">[MONTH] == 12</Expression>
             </Expressions>
             <Compare expression="c0">
               <PartImage x="244" y="357" width="32" height="30">
@@ -668,11 +676,11 @@
                 <Image resource="mon_11" />
               </PartImage>
             </Compare>
-            <Default>
+            <Compare expression="c11">
               <PartImage x="244" y="357" width="32" height="30">
                 <Image resource="mon_12" />
               </PartImage>
-            </Default>
+            </Compare>
           </Condition>
         </Group>
       </ListOption>

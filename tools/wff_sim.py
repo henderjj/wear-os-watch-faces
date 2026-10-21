@@ -64,6 +64,7 @@ class Sim:
         self.utc = local - dt.timedelta(hours=offset_h)
         self.ambient = ambient
         self.drawn = []
+        self.condition_hits = []  # number of active Compares per Condition evaluated
         # defaults from UserConfigurations, then overrides
         self.cfg = {}
         for c in self.root.find("UserConfigurations"):
@@ -170,13 +171,15 @@ class Sim:
                 if opt.get("id") == want:
                     self.children(opt, layer)
         elif tag == "Condition":
-            for comp in el.findall("Compare"):
-                name = comp.get("expression")
-                expr = next(e.text for e in el.find("Expressions") if e.get("name") == name)
-                if self.ev(expr):
-                    self.children(comp, layer)
-                    return
-            if el.find("Default") is not None:
+            # Documented WFF semantics: EVERY Compare whose expression is true is shown
+            # (not just the first), and Default only when none are true. Overlapping
+            # expressions therefore draw several children; keep them mutually exclusive.
+            exprs = {e.get("name"): e.text for e in el.find("Expressions")}
+            active = [c for c in el.findall("Compare") if self.ev(exprs[c.get("expression")])]
+            self.condition_hits.append(len(active))
+            for comp in active:
+                self.children(comp, layer)
+            if not active and el.find("Default") is not None:
                 self.children(el.find("Default"), layer)
         elif tag == "AnalogClock":
             if self.attr_alpha(el) == 0:
