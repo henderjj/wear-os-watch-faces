@@ -1,4 +1,4 @@
-"""Check the date Conditions for every day of 2026-2028 in both layouts."""
+"""Check the date Conditions for every day of 2026-2028 in both layouts.\n\nEach Condition must have exactly one true Compare, and the images drawn must spell the right date.\n"""
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 GEN = os.path.join(HERE, "generated")
@@ -28,6 +28,11 @@ while d < dt.date(2029, 1, 1):
         if got != want:
             bad += 1
             print("MISMATCH", d, style, got, want)
+        # Every date Condition must have exactly one active Compare: overlapping or
+        # missing matches depend on undocumented runtime behaviour (the v1.2 bug).
+        if any(h != 1 for h in s.condition_hits):
+            bad += 1
+            print("NOT EXACTLY ONE MATCH", d, style, s.condition_hits)
     d += dt.timedelta(days=1)
 print("checked 3 years x 2 layouts, mismatches:", bad)
 sys.exit(1 if bad else 0)

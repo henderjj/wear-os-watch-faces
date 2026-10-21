@@ -43,7 +43,7 @@ The third route suits an agent best. The XML is plain text and the schema is pub
 - **Format versions.** Pick the lowest version that has what you need. **Version 1 runs on Wear OS 4 and later**, which includes the Galaxy Watch 6 even before its software updates. Later versions add features such as Flavors (v2) and nested settings (v5). Check the *Available features* page before using anything new.
 - **The trig functions work in radians.** `deg()` and `rad()` convert.
 - **Some data sources are strings.** In v1, `TIMEZONE_OFFSET` and the `*_S`/`*_F` day and month names are strings, and the names depend on the watch's locale. Prefer numeric sources such as `[DAY_OF_WEEK]` (1 = Sunday), `[DAY]` and `[MONTH]` where you can.
-- **Integer and float comparisons have odd rules.** The documentation says that comparing an integer with its floating-point equivalent using `<` is `false`, and using `<=` is `true`. Avoid comparing the result of division or `floor()` with `==`. Use ranges (`[DAY] < 10`) or integer modulo (`[DAY] % 10 == 3`).
+- **Integer and float comparisons have odd rules.** The documentation says that comparing an integer with its floating-point equivalent using `<` is `false`, and using `<=` is `true`. Avoid comparing the result of division or `floor()` with `==`. Use integer arithmetic with exact matches, for example `([DAY] % 10) == 3`, or `([DAY] - ([DAY] % 10)) == 20` for the tens digit.
 - **Masks (`renderMode="MASK"`)** apply only within their parent `Group`. Order doesn't matter there: all `SOURCE` children are drawn, then clipped by the combined `MASK` children. Soft-edged masks work, which allows smooth transitions.
 - **Customisation** is declared in `<UserConfigurations>` (`ListConfiguration`, `BooleanConfiguration`, `ColorConfiguration`) and used in the scene.
   - **Settings can't be nested before v5.** Never put one setting's `ListConfiguration` inside another's `ListOption`. The schema validator accepts it, but on a real watch the customise screen closes when you change that setting.
@@ -53,7 +53,10 @@ The third route suits an agent best. The XML is plain text and the schema is pub
 - **How tinting blends isn't documented.** If you tint an image, draw the part to be tinted in **pure white**, and put shading on a separate untinted layer above it. Then the result is the same whether the watch multiplies or replaces the colour.
 - **An `AnalogClock` can hold at most two of each hand type.** For more layers per hand, stack several `AnalogClock`s.
 - **Always-on display:** use `<Variant mode="AMBIENT" target="alpha" .../>` to dim or hide parts. Keep the always-on view dark and sparse.
-- **`Condition`** picks the **first** `Compare` that is true, otherwise `Default`. Every `ListOption` and `Compare` needs exactly one child, so wrap several elements in a `Group`.
+- **`Condition` shows every `Compare` whose expression is true**, not just the first. `Default` is shown only when none are true.
+  - Make the expressions **mutually exclusive**, with exactly one true at a time, and don't rely on their order or on `Default`.
+  - Overlapping ranges such as `< 10`, `< 20`, `< 30` plus a `Default` misbehaved on a real watch.
+  - Every `ListOption` and `Compare` needs exactly one child, so wrap several elements in a `Group`.
 
 ---
 
@@ -157,6 +160,7 @@ Then work in small rounds. Ask for one coherent change per release (for example 
 | Day and month names are locale-dependent strings | Select images by `[DAY_OF_WEEK]` and `[MONTH]` numbers instead. The date is then always capitals in your chosen style. |
 | Hand colours: tint or pre-coloured images? | Pre-coloured images looked right but led to nesting (below). White artwork with an untinted shading layer above gives the same look without nesting. |
 | **Changing hand style closed the customise screen** | Hand colour was a setting nested inside each hand-style option. The docs say settings can't be nested, but the schema allows it. The fix was flattening the settings, plus a lint rule so it can't happen again. |
+| The date showed 31 OCT on 21 October. The tens digit used overlapping ranges and assumed only the first true `Compare` is shown; the simulator made the same assumption, so the tests passed. | Make the simulator follow the documented rules, not your assumptions, and test for exactly one active option per Condition. A checker that shares the generator's misunderstanding proves nothing. |
 | The simulator agreed with a precise solar formula to within about 1% | Independent checks earn trust. Hold back deep visual tweaks until the logic is proven. |
 
 ---

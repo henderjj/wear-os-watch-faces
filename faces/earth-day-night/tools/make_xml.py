@@ -56,22 +56,25 @@ def image(res, r, extra=""):
     return f'<PartImage x="{x}" y="{y}" width="{w}" height="{h}">{extra}\n  <Image resource="{res}" />\n</PartImage>'
 
 
-def condition(cases, default):
-    """cases: [(expression, element_xml)], default: element_xml"""
+def condition(cases):
+    """cases: [(expression, element_xml)].
+
+    WFF shows EVERY Compare whose expression is true, and the watch's handling of
+    Default and of overlapping expressions has proved unreliable (v1.2 showed 31 OCT on
+    21 Oct). So each value gets its own exact-match Compare, exactly one expression is
+    true at any time, and there is no Default.
+    """
     exprs = "\n".join(f'    <Expression name="c{i}">{escape(e)}</Expression>' for i, (e, _) in enumerate(cases))
     comps = "\n".join(f'  <Compare expression="c{i}">\n{ind(el, 4)}\n  </Compare>' for i, (_, el) in enumerate(cases))
-    return f"<Condition>\n  <Expressions>\n{exprs}\n  </Expressions>\n{comps}\n  <Default>\n{ind(default, 4)}\n  </Default>\n</Condition>"
+    return f"<Condition>\n  <Expressions>\n{exprs}\n  </Expressions>\n{comps}\n</Condition>"
 
 
 def date_parts(L, day_res):
-    weekday = condition([(f"[DAY_OF_WEEK] == {i}", image(f"{day_res}_{i}", L["day"])) for i in range(1, 7)],
-                        image(f"{day_res}_7", L["day"]))
-    tens = condition([(f"[DAY] < {10 * (i + 1)}", image(f"dig_{i}", L["tens"])) for i in range(3)],
-                     image("dig_3", L["tens"]))
-    units = condition([(f"[DAY] % 10 == {i}", image(f"dig_{i}", L["units"])) for i in range(9)],
-                      image("dig_9", L["units"]))
-    month = condition([(f"[MONTH] == {i}", image(f"mon_{i}", L["month"])) for i in range(1, 12)],
-                      image("mon_12", L["month"]))
+    weekday = condition([(f"[DAY_OF_WEEK] == {i}", image(f"{day_res}_{i}", L["day"])) for i in range(1, 8)])
+    # Tens digit by exact integer match: 21 - (21 % 10) == 20. No ranges, no floats.
+    tens = condition([(f"([DAY] - ([DAY] % 10)) == {10 * i}", image(f"dig_{i}", L["tens"])) for i in range(4)])
+    units = condition([(f"([DAY] % 10) == {i}", image(f"dig_{i}", L["units"])) for i in range(10)])
+    month = condition([(f"[MONTH] == {i}", image(f"mon_{i}", L["month"])) for i in range(1, 13)])
     return weekday, tens, units, month
 
 

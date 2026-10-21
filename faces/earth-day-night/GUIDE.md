@@ -6,7 +6,7 @@ An analogue Wear OS watch face showing the Earth from space, lit as it is right 
 
 *08:00, 13:00, 18:30 and 23:02 BST on 8 October 2026, rendered from the shipped XML.*
 
-**Current version:** 1.2.0 (versionCode 3)
+**Current version:** 1.2.1 (versionCode 4)
 
 For the general approach (working with an AI agent, the format's pitfalls, the check-and-test loop), see [docs/agentic-wear-os-watch-faces.md](../../docs/agentic-wear-os-watch-faces.md).
 
@@ -122,12 +122,14 @@ Day and month names from the watch (`DAY_OF_WEEK_S`, `MONTH_S`) depend on its la
 
 | Part | Selected by | Images |
 |---|---|---|
-| Weekday | `[DAY_OF_WEEK] == 1…6`, default 7 (1 = Sunday) | `day_1…7` (centred) or `dayr_1…7` (right-aligned for the single window) |
-| Tens digit | `[DAY] < 10 / < 20 / < 30`, default 3 | `dig_0…3` |
-| Units digit | `[DAY] % 10 == 0…8`, default 9 | `dig_0…9` |
-| Month | `[MONTH] == 1…11`, default 12 | `mon_1…12` |
+| Weekday | `[DAY_OF_WEEK] == 1…7` (1 = Sunday) | `day_1…7` (centred) or `dayr_1…7` (right-aligned for the single window) |
+| Tens digit | `([DAY] - ([DAY] % 10)) == 0 / 10 / 20 / 30` | `dig_0…3` |
+| Units digit | `([DAY] % 10) == 0…9` | `dig_0…9` |
+| Month | `[MONTH] == 1…12` | `mon_1…12` |
 
-The ranges and integer modulo avoid WFF's quirks with comparing floats. Frames (`frame_day`, `frame_date`, `frame_full`) are dark glass with a bevelled steel edge. Positions come from `tools/generated/date_layout.json`. The split windows' outer edges sit 184 px from the centre, and the single window is centred 147 px below it.
+Every value has its own exact-match rule, so **exactly one rule in each Condition is true** at any time. There's no `Default`, and nothing depends on the order of the rules. This matters because WFF shows every `Compare` whose expression is true, not just the first.
+
+Version 1.2 used overlapping ranges for the tens digit (`[DAY] < 10`, `< 20`, `< 30`, otherwise 3). On the watch, that showed **31 OCT on 21 October**. All the expressions use integer arithmetic only, which avoids WFF's quirks with comparing floats. Frames (`frame_day`, `frame_date`, `frame_full`) are dark glass with a bevelled steel edge. Positions come from `tools/generated/date_layout.json`. The split windows' outer edges sit 184 px from the centre, and the single window is centred 147 px below it.
 
 ### 3.5 Hands and colours
 
@@ -202,7 +204,7 @@ Rebuilding from unchanged inputs reproduces the shipped v1.2 files exactly: iden
 | Script | What it checks |
 |---|---|
 | `../../tools/wff_lint.py` (shared) | No setting is nested inside another; each `CONFIGURATION` reference points to a colour setting; no missing or unused drawables or strings |
-| `check_dates.py` | The date Conditions choose the right images for every day from 2026 to 2028, in both layouts |
+| `check_dates.py` | For every day from 2026 to 2028, in both layouts: exactly one rule is true in each date Condition, and the images drawn spell the right date |
 | `check_faces.py` | Renders nine times of year and compares the day/night mask with `solar.py`. Previews go to `tools/generated/previews/` |
 | `../../tools/wff_sim.py` (shared) | The renderer the checks use. It reads `watchface.xml` and draws any time, setting combination or always-on view: `python ../../tools/wff_sim.py watchface/src/main/res/raw/watchface.xml watchface/src/main/res/drawable-nodpi out.png 2026-10-08T10:08:32 1 handStyle=sword handTint=2 dateStyle=single` |
 | `../../tools/validate_wff.py` (shared) | The XML against Google's official schema for format version 1 |
@@ -249,6 +251,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 |---|---|
 | 1.0.0 | Earth over London; layered day/night with sun-position maths; Dauphine hands; always-on mode |
 | 1.1.0 | View centred on the equator; day/date windows; settings for hand style, hand colour, seconds colour, seconds on/off and date layout |
+| 1.2.1 | Fixed the date showing the wrong tens digit from the 20th of each month (31 OCT on 21 October). Every date rule is now an exact match, with no overlapping ranges or Default. |
 | 1.2.0 | Fixed the customise screen closing when changing **Hand style**. Settings are now all top-level, and hands use white tinted bodies with untinted shading. Hand and seconds colours reset to the defaults once on upgrade. |
 
 ---
