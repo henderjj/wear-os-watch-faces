@@ -4,7 +4,7 @@ An analogue watch face showing the Earth from space above the equator at Greenwi
 
 ![The face through the day](images/day-cycle.png)
 
-- **Version:** 1.2.1 (versionCode 4)
+- **Version:** 1.2.2 (versionCode 5)
 - **Package:** `uk.earthface.daynight`
 - **Watch Face Format:** version 1, so it runs on Wear OS 4 and later. Tested on a Galaxy Watch 6.
 

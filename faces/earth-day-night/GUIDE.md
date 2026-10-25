@@ -6,7 +6,7 @@ An analogue Wear OS watch face showing the Earth from space, lit as it is right 
 
 *08:00, 13:00, 18:30 and 23:02 BST on 8 October 2026, rendered from the shipped XML.*
 
-**Current version:** 1.2.1 (versionCode 4)
+**Current version:** 1.2.2 (versionCode 5)
 
 For the general approach (working with an AI agent, the format's pitfalls, the check-and-test loop), see [docs/agentic-wear-os-watch-faces.md](../../docs/agentic-wear-os-watch-faces.md).
 
@@ -251,6 +251,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 |---|---|
 | 1.0.0 | Earth over London; layered day/night with sun-position maths; Dauphine hands; always-on mode |
 | 1.1.0 | View centred on the equator; day/date windows; settings for hand style, hand colour, seconds colour, seconds on/off and date layout |
+| 1.2.2 | Rebuilt the hand and date-digit images with Pillow 13, which resizes transparent images slightly differently. Edges of the date digits lose a faint dark fringe; nothing else looks different. |
 | 1.2.1 | Fixed the date showing the wrong tens digit from the 20th of each month (31 OCT on 21 October). Every date rule is now an exact match, with no overlapping ranges or Default. |
 | 1.2.0 | Fixed the customise screen closing when changing **Hand style**. Settings are now all top-level, and hands use white tinted bodies with untinted shading. Hand and seconds colours reset to the defaults once on upgrade. |
 
