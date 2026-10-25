@@ -6,7 +6,7 @@ Watch faces for Wear OS, built with Claude, along with the guides and scripts us
 
 | | Face | Description | Version |
 |---|---|---|---|
-| <img src="faces/earth-day-night/watchface/src/main/res/drawable-nodpi/preview.png" width="120" alt="Earth Day & Night"> | **[Earth Day & Night](faces/earth-day-night/)** | The Earth from space with live daylight, twilight and city lights at night. Day and date windows, four hand styles, colour options. | 1.2.1 (WFF v1) |
+| <img src="faces/earth-day-night/watchface/src/main/res/drawable-nodpi/preview.png" width="120" alt="Earth Day & Night"> | **[Earth Day & Night](faces/earth-day-night/)** | The Earth from space with live daylight, twilight and city lights at night. Day and date windows, four hand styles, colour options. | 1.2.2 (WFF v1) |
 
 ## Repository layout
 
