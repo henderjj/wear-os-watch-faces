@@ -15,12 +15,14 @@ Install [Android Studio](https://developer.android.com/studio). The default opti
 
 ### 3. Pair the PC with the watch
 1. On the watch, in **Wireless debugging**, tap **Pair new device**. It shows a 6-digit code and an `IP:port`.
-2. In Android Studio, open the **Terminal** tab (bottom of the window) and run:
-   ```powershell
-   & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" pair <IP:port shown on the pairing screen> <6-digit code>
-   ```
+2. Pair in either of these ways:
+   - **Android Studio's pairing dialog:** open the device drop-down at the top of the window, choose **Pair Devices Using Wi-Fi**, then **Pair using pairing code**. Select the watch when it appears and enter the 6-digit code.
+   - **The command line:** open the **Terminal** tab (bottom of the window) and run:
+     ```powershell
+     & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" pair <IP:port shown on the pairing screen> <6-digit code>
+     ```
 
-You only pair once per PC.
+You only pair once per PC. After pairing through Android Studio, the watch usually reconnects by itself whenever Wireless debugging is on, so you can skip step 5 if it's already in the device drop-down.
 
 ## Each time you install or update a face
 
