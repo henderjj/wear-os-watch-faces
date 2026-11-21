@@ -9,8 +9,8 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
-from params import (CANVAS, CENTER, EARTH_R, LAT0, LON0, MASK_STEP_DEG,
-                    MASK_COUNT, MASK_RES, mask_profile)
+from params import (CANVAS, CENTER, EARTH_R, MASK_STEP_DEG,
+                    MASK_COUNT, MASK_RES, VIEWS, mask_profile)
 
 DAY_TEX, NIGHT_TEX, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 SS = 2  # supersampling
@@ -46,8 +46,8 @@ def ortho_grid(size):
     return u, v, z, inside, np.sqrt(r2)
 
 
-def earth_latlon(u, v, z):
-    p0, l0 = math.radians(LAT0), math.radians(LON0)
+def earth_latlon(u, v, z, lat0, lon0):
+    p0, l0 = math.radians(lat0), math.radians(lon0)
     e = np.array([-math.sin(l0), math.cos(l0), 0.0])
     n = np.array([-math.sin(p0) * math.cos(l0), -math.sin(p0) * math.sin(l0), math.cos(p0)])
     c = np.array([math.cos(p0) * math.cos(l0), math.cos(p0) * math.sin(l0), math.sin(p0)])
@@ -64,11 +64,17 @@ def disk_alpha(r, size):
 
 
 def render_earth():
-    size = 2 * EARTH_R * SS
-    u, v, z, inside, r = ortho_grid(size)
-    lat, lon = earth_latlon(u, v, z)
     day_tex = np.asarray(Image.open(DAY_TEX).convert("RGB"), dtype=np.float32) / 255.0
     night_tex = np.asarray(Image.open(NIGHT_TEX).convert("RGB"), dtype=np.float32) / 255.0
+    for view, (_, lat0, lon0) in VIEWS.items():
+        render_view(view, lat0, lon0, day_tex, night_tex)
+
+
+def render_view(view, lat0, lon0, day_tex, night_tex):
+    """earth_day_<view> and earth_night_<view>: the globe centred on (lat0, lon0)."""
+    size = 2 * EARTH_R * SS
+    u, v, z, inside, r = ortho_grid(size)
+    lat, lon = earth_latlon(u, v, z, lat0, lon0)
 
     day = sample(day_tex, lat, lon)
     # gentle contrast / saturation lift
@@ -90,7 +96,7 @@ def render_earth():
     night = np.clip(night + rim, 0, 1)
 
     a = disk_alpha(r, size)[..., None]
-    for name, img in (("earth_day", day), ("earth_night", night)):
+    for name, img in ((f"earth_day_{view}", day), (f"earth_night_{view}", night)):
         rgba = np.concatenate([img, a], axis=2)
         im = Image.fromarray((rgba * 255 + 0.5).astype(np.uint8), "RGBA").resize(
             (2 * EARTH_R, 2 * EARTH_R), Image.LANCZOS)

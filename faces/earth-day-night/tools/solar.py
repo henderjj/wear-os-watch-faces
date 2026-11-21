@@ -3,7 +3,7 @@ import math
 
 import numpy as np
 
-from params import LAT0, LON0, mask_profile
+from params import mask_profile
 
 
 def precise_sun(t):
@@ -21,9 +21,10 @@ def precise_sun(t):
     return dec, sublon
 
 
-def truth_mask(t, size):
+def truth_mask(t, size, lat0, lon0):
+    """True day/night opacity on a globe centred on (lat0, lon0), and the disk."""
     dec, sublon = precise_sun(t)
-    p0, l0 = math.radians(LAT0), math.radians(LON0)
+    p0, l0 = math.radians(lat0), math.radians(lon0)
     ls = math.radians(sublon)
     s = np.array([math.cos(dec) * math.cos(ls), math.cos(dec) * math.sin(ls), math.sin(dec)])
     e = np.array([-math.sin(l0), math.cos(l0), 0.0])

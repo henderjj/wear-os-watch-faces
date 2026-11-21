@@ -10,7 +10,7 @@ from xml.sax.saxutils import escape, quoteattr
 sys.path.insert(0, HERE)
 import wff_expr as W  # noqa: E402
 from hands import ACCENTS, METALS, STYLES  # noqa: E402
-from params import CANVAS, EARTH_R, EARTH_X, LAT0, LON0, MASK_COUNT, MASK_STEP_DEG  # noqa: E402
+from params import CANVAS, DEFAULT_VIEW, EARTH_R, EARTH_X, MASK_COUNT, MASK_STEP_DEG, VIEWS  # noqa: E402
 
 XML_OUT, STRINGS_OUT = sys.argv[1], sys.argv[2]
 hands = json.load(open(os.path.join(GEN, "hands.json")))
@@ -18,17 +18,20 @@ layout = json.load(open(os.path.join(GEN, "date_layout.json")))
 D = 2 * EARTH_R
 C = CANVAS / 2
 
-DEFAULTS = {"handStyle": "dauphine", "handTint": "0", "accentTint": "0", "seconds": "TRUE", "dateStyle": "split"}
+DEFAULTS = {"view": DEFAULT_VIEW, "handStyle": "dauphine", "handTint": "0", "accentTint": "0", "seconds": "TRUE", "dateStyle": "split"}
 DATE_STYLES = {"split": "Day and date apart", "single": "One window at 6", "off": "Off"}
 
 strings = {
     "watch_face_name": "Earth Day &amp; Night",
+    "cfg_view": "View",
     "cfg_hand_style": "Hand style",
     "cfg_hand_color": "Hand colour",
     "cfg_accent": "Seconds hand colour",
     "cfg_seconds": "Seconds hand",
     "cfg_date": "Date",
 }
+for k, (v, _, _) in VIEWS.items():
+    strings[f"view_{k}"] = escape(v)
 for k, v in STYLES.items():
     strings[f"style_{k}"] = v
 for k, (v, _) in METALS.items():
@@ -157,6 +160,7 @@ def color_cfg(cid, label, opts, prefix):
 
 
 user_cfg = "\n".join([
+    list_cfg("view", "cfg_view", VIEWS, "view"),
     list_cfg("handStyle", "cfg_hand_style", STYLES, "style"),
     color_cfg("handTint", "cfg_hand_color", METALS, "metal"),
     color_cfg("accentTint", "cfg_accent", ACCENTS, "accent"),
@@ -164,19 +168,56 @@ user_cfg = "\n".join([
     list_cfg("dateStyle", "cfg_date", DATE_STYLES, "date"),
 ])
 
-masks = "\n".join(
-    f'          <PartImage x="0" y="0" width="{D}" height="{D}">\n'
-    f'            <Transform target="alpha" value={quoteattr(W.mask_alpha(j))} />\n'
-    f'            <Image resource="mask_{j:02d}" />\n'
-    f'          </PartImage>'
-    for j in range(MASK_COUNT))
+
+
+def earth_view(view, lat0, lon0):
+    """Night globe plus the day globe clipped by the terminator mask, for one view.
+
+    The mask images are shared by every view; only the expressions that place the Sun
+    (and the two Earth images) depend on where the view is centred."""
+    W_ = W.View(lat0, lon0)
+    masks = "\n".join(
+        f'      <PartImage x="0" y="0" width="{D}" height="{D}">\n'
+        f'        <Transform target="alpha" value={quoteattr(W_.mask_alpha(j))} />\n'
+        f'        <Image resource="mask_{j:02d}" />\n'
+        f'      </PartImage>'
+        for j in range(MASK_COUNT))
+    ns = "N" if lat0 >= 0 else "S"
+    ew = "E" if lon0 >= 0 else "W"
+    return f'''<!-- {VIEWS[view][0]}: centred on {abs(lat0):g} {ns}, {abs(lon0):g} {ew} -->
+<!-- Night side: always drawn; the day side covers it where the Sun is up -->
+<PartImage x="{EARTH_X}" y="{EARTH_X}" width="{D}" height="{D}">
+  <Variant mode="AMBIENT" target="alpha" value="140" />
+  <Image resource="earth_night_{view}" />
+</PartImage>
+<!-- Day side, clipped by the terminator mask -->
+<Group name="daylight_{view}" x="{EARTH_X}" y="{EARTH_X}" width="{D}" height="{D}">
+  <Variant mode="AMBIENT" target="alpha" value="0" />
+  <PartImage x="0" y="0" width="{D}" height="{D}">
+    <Image resource="earth_day_{view}" />
+  </PartImage>
+  <Group name="terminator_{view}" x="0" y="0" width="{D}" height="{D}" pivotX="0.5" pivotY="0.5" renderMode="MASK">
+    <!-- Rotate the mask so its bright side faces the Sun (clockwise from 3 o'clock) -->
+    <Transform target="angle" value={quoteattr(W_.ROT)} />
+{masks}
+  </Group>
+</Group>'''
+
+
+# A v1 ListOption holds a single element, so each view is one Group.
+view_opts = "\n".join(f'  <ListOption id="{k}">\n'
+                       f'    <Group name="earth_{k}" x="0" y="0" width="{CANVAS}" height="{CANVAS}">\n'
+                       f'{ind(earth_view(k, lat0, lon0), 6)}\n'
+                       f'    </Group>\n  </ListOption>'
+                       for k, (_, lat0, lon0) in VIEWS.items())
+earth_xml = f'<ListConfiguration id="view">\n{view_opts}\n</ListConfiguration>'
 
 xml = f'''<?xml version="1.0" encoding="utf-8"?>
 <!--
   Earth Day & Night - an analogue watch face for Wear OS (Watch Face Format v1).
 
-  The Earth is shown as seen from space above {LAT0:g} N, {LON0:g} E (the equator at
-  Greenwich). Two pre-rendered views are stacked: the night side (city lights) underneath
+  The Earth is shown as seen from space, centred on the equator or the Tropic of
+  Cancer at Greenwich (the View setting). Two pre-rendered globes are stacked: the night side (city lights) underneath
   and the sunlit side on top. The sunlit layer is clipped by a soft mask that
   marks where the Sun is up. The mask's shape depends only on how far the Sun
   is from the viewing direction, so {MASK_COUNT} shapes are pre-rendered
@@ -186,7 +227,7 @@ xml = f'''<?xml version="1.0" encoding="utf-8"?>
   The Sun's position is computed from UTC time and the day of the year:
   declination (season) plus the equation of time.
 
-  Customisation (long-press the face > Customise): hand style, hand colour,
+  Customisation (long-press the face > Customise): view, hand style, hand colour,
   seconds hand colour, seconds hand on/off, and date layout.
 
   Imagery: NASA Blue Marble and NASA Earth at Night (public domain).
@@ -212,24 +253,8 @@ xml = f'''<?xml version="1.0" encoding="utf-8"?>
       <Image resource="atmosphere" />
     </PartImage>
 
-    <!-- Night side: always drawn; the day side covers it where the Sun is up -->
-    <PartImage x="{EARTH_X}" y="{EARTH_X}" width="{D}" height="{D}">
-      <Variant mode="AMBIENT" target="alpha" value="140" />
-      <Image resource="earth_night" />
-    </PartImage>
-
-    <!-- Day side, clipped by the terminator mask -->
-    <Group name="daylight" x="{EARTH_X}" y="{EARTH_X}" width="{D}" height="{D}">
-      <Variant mode="AMBIENT" target="alpha" value="0" />
-      <PartImage x="0" y="0" width="{D}" height="{D}">
-        <Image resource="earth_day" />
-      </PartImage>
-      <Group name="terminator" x="0" y="0" width="{D}" height="{D}" pivotX="0.5" pivotY="0.5" renderMode="MASK">
-        <!-- Rotate the mask so its bright side faces the Sun (clockwise from 3 o'clock) -->
-        <Transform target="angle" value={quoteattr(W.ROT)} />
-{masks}
-      </Group>
-    </Group>
+    <!-- The Earth, by view: night side underneath, day side clipped by the terminator -->
+{ind(earth_xml, 4)}
 
     <!-- Minute track -->
     <PartImage x="0" y="0" width="{CANVAS}" height="{CANVAS}">
