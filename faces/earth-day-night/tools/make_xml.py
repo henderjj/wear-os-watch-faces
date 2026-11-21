@@ -216,8 +216,9 @@ xml = f'''<?xml version="1.0" encoding="utf-8"?>
 <!--
   Earth Day & Night - an analogue watch face for Wear OS (Watch Face Format v1).
 
-  The Earth is shown as seen from space, centred on the equator or the Tropic of
-  Cancer at Greenwich (the View setting). Two pre-rendered globes are stacked: the night side (city lights) underneath
+  The Earth is shown as seen from space, centred on one of {len(VIEWS)} regions (the View
+  setting), each on the Tropic of Cancer, the equator or the Tropic of Capricorn.
+  Two pre-rendered globes are stacked: the night side (city lights) underneath
   and the sunlit side on top. The sunlit layer is clipped by a soft mask that
   marks where the Sun is up. The mask's shape depends only on how far the Sun
   is from the viewing direction, so {MASK_COUNT} shapes are pre-rendered

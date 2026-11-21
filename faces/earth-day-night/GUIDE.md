@@ -6,7 +6,7 @@ An analogue Wear OS watch face showing the Earth from space, lit as it is right 
 
 *08:00, 13:00, 18:30 and 23:02 BST on 8 October 2026, rendered from the shipped XML.*
 
-**Current version:** 1.3.0 (versionCode 6)
+**Current version:** 1.4.0 (versionCode 7)
 
 For the general approach (working with an AI agent, the format's pitfalls, the check-and-test loop), see [docs/agentic-wear-os-watch-faces.md](../../docs/agentic-wear-os-watch-faces.md).
 
@@ -14,7 +14,7 @@ For the general approach (working with an AI agent, the format's pitfalls, the c
 
 ## 1. Features
 
-- **Live Earth.** The view is centred on 0°N 0°E (the equator at Greenwich) or, with the **View** setting, on 23.44°N 0°E (the Tropic of Cancer at Greenwich). Europe and the UK are towards 12 o'clock in both.
+- **Live Earth, 15 views.** The **View** setting centres the globe on one of 15 regions. Every view sits on the Tropic of Cancer, the equator or the Tropic of Capricorn, and the longitude picks the region. North is always at 12 o'clock. The default is the original view over 0°N 0°E (the equator at Greenwich).
   - The sunlit half shows NASA Blue Marble imagery.
   - The night half shows NASA city lights, with the continents faintly visible.
   - A soft twilight band separates them.
@@ -29,7 +29,7 @@ For the general approach (working with an AI agent, the format's pitfalls, the c
 
 | Setting | Type | Options (default first) |
 |---|---|---|
-| View | List `view` | Equator, Tropic of Cancer |
+| View | List `view` | West & Central Africa (0°N 0°E), then the other 14 in 3.4 |
 | Hand style | List `handStyle` | Dauphine, Sword (with lume insert), Baton, Skeleton (open frame) |
 | Hand colour | Colour `handTint` | White, Steel, Gold, Rose gold |
 | Seconds hand colour | Colour `accentTint` | Orange, Red, Yellow, Blue, White |
@@ -54,10 +54,10 @@ faces/earth-day-night/
 │   └── src/main/
 │       ├── AndroidManifest.xml   hasCode="false", WFF version property = 1
 │       └── res/
-│           ├── raw/watchface.xml        the watch face (generated, about 120 KB)
+│           ├── raw/watchface.xml        the watch face (generated, about 700 KB)
 │           ├── values/strings.xml       names shown in Customise (generated)
 │           ├── xml/watch_face_info.xml  preview image + Editable=true
-│           └── drawable-nodpi/          115 PNGs (generated, about 1.4 MB)
+│           └── drawable-nodpi/          141 PNGs (generated, about 6.2 MB)
 └── gradle/, gradlew, settings.gradle.kts, build.gradle.kts   (from Google's SimpleAnalog sample)
 ```
 
@@ -119,23 +119,25 @@ Every point on the visible disk is lit by `illum = u·Sx + v·Sy + z·Sz`, where
 
 ### 3.4 Views
 
-The **View** setting (`view`) picks where the globe is centred. Each view is a `ListOption` holding one `Group` with its own night image, day image and terminator. They're listed in `params.py`:
+The **View** setting (`view`) picks where the globe is centred. Each view is a `ListOption` holding one `Group` with its own night image, day image and terminator. Every view is centred on one of three latitudes, the Tropic of Cancer (23.44°N), the equator or the Tropic of Capricorn (23.44°S); the longitude picks the region. They're listed in `params.py` → `VIEWS`, in the order Customise shows them:
 
-```python
-VIEWS = {
-    "equator": ("Equator", 0.0, 0.0),
-    "cancer": ("Tropic of Cancer", 23.44, 0.0),
-}
-```
+| Latitude | Views (longitude of the centre) |
+|---|---|
+| Tropic of Cancer | US West Coast (120°W), Central US & C. America (97°W), US East Coast (77°W), Europe & N. Africa (0°), E. Europe & Middle East (40°E), Russia & Central Asia (78°E), East Asia (115°E) |
+| Equator | Amazon (60°W), **West & Central Africa (0°, default)**, East Africa (37°E), Southern Asia (78°E), South-East Asia (110°E) |
+| Tropic of Capricorn | South America (60°W), Southern Africa (20°E), Australia & NZ (152°E) |
+
+The ids `equator` (0°N 0°E) and `cancer` (23.44°N 0°E) are kept from 1.3, so a view chosen in 1.3 stays chosen after the upgrade.
 
 - **The masks are shared.** Their shape depends only on the angle between the Sun and the viewing direction (3.3), so every view uses the same 37 masks. Only the Sun expressions (3.2, with that view's `LAT0`, `LON0`) and the two Earth images differ.
-- **Cost per view:** two Earth images, about 385–415 KB of PNG in the APK, and about 46 KB of XML. On the watch, only the chosen view is drawn, so the images in use stay the same size as before: two 392×392 bitmaps, about 1.2 MB in memory.
+- **Cost per view:** two Earth images, about 400 KB of PNG in the APK, and about 46 KB of XML. All 15 views add up to about 5.7 MB of Earth images. On the watch, only the chosen view is drawn, so the images in use are two 392×392 bitmaps, about 1.2 MB in memory, whichever view is chosen.
 - `check_faces.py` checks the day/night line of every view against `solar.py`.
-- **Adding a view** is one line in `VIEWS` (an id, the name shown in Customise, the latitude and longitude of the centre) and a rebuild.
+- **Adding a view** is one line in `VIEWS` (an id, the name shown in Customise, the latitude and longitude of the centre) and a rebuild. Use `CANCER`, `EQUATOR` or `CAPRICORN` for the latitude.
+- `tools/view_sheet.py` redraws the picture below after a build.
 
-![Equator view (left) and Tropic of Cancer view (right)](images/views.png)
+![All 15 views](images/views.png)
 
-*Equator (left) and Tropic of Cancer (right) at 13:00 BST on 21 June and 16:00 GMT on 21 December.*
+*All 15 views, each at 14:30 local solar time on 21 November 2026.*
 
 ### 3.5 Date windows
 
@@ -209,7 +211,7 @@ python ../../tools/validate_wff.py watchface/src/main/res/raw/watchface.xml --ve
 
 The validator needs git and Java. On Windows it uses the Java bundled with Android Studio. Its first run downloads and compiles Google's validator into the repository's `external/` folder, which git ignores.
 
-This takes about 30 seconds, then:
+This takes about two and a half minutes, most of it checking the day/night line in all 15 views. Then:
 1. renders the Earth, masks, starfield, glow and dial (`render_assets.py`)
 2. renders the hands, cap and seconds artwork (`hands.py`)
 3. renders the date frames, words and digits, and writes the layout (`date_assets.py`)
@@ -238,7 +240,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 
 | Change | Where |
 |---|---|
-| **Add a view, or centre one somewhere else** (e.g. over London) | `params.py` → `VIEWS`: add `"london": ("London", 51.5, -0.13)`. The masks don't change; the expressions and Earth images follow automatically. Each view adds about 400 KB to the APK (3.4). |
+| **Add a view, or move one** | `params.py` → `VIEWS`: for example `"cancer_140e": ("Japan", CANCER, 140.0)`. Then run `tools/view_sheet.py` to redraw `images/views.png`. The masks don't change; the expressions and Earth images follow automatically. Each view adds about 400 KB to the APK (3.4). |
 | Wider or narrower twilight band | `params.py`: `LO`, `HI` (cosine of the solar zenith angle at the night and day ends) |
 | Size of the globe | `params.py`: `EARTH_R` (196 px on a 450 px canvas) |
 | Night side brighter or darker; city light colour | `render_assets.py` → `render_earth()` |
@@ -272,6 +274,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 |---|---|
 | 1.0.0 | Earth over London; layered day/night with sun-position maths; Dauphine hands; always-on mode |
 | 1.1.0 | View centred on the equator; day/date windows; settings for hand style, hand colour, seconds colour, seconds on/off and date layout |
+| 1.4.0 | **View** now offers 15 regions around the world, each centred on the Tropic of Cancer, the equator or the Tropic of Capricorn (3.4). The 1.3 views keep their ids: Equator is now called West & Central Africa, and Tropic of Cancer is now Europe & N. Africa. |
 | 1.3.0 | New **View** setting: centre the globe on the equator (as before, the default) or on the Tropic of Cancer at 23.44°N. The views share the day/night masks; each has its own pair of Earth images. Earth images are now named `earth_day_<view>` and `earth_night_<view>`. |
 | 1.2.2 | Rebuilt the hand and date-digit images with Pillow 13, which resizes transparent images slightly differently. Edges of the date digits lose a faint dark fringe; nothing else looks different. |
 | 1.2.1 | Fixed the date showing the wrong tens digit from the 20th of each month (31 OCT on 21 October). Every date rule is now an exact match, with no overlapping ranges or Default. |
