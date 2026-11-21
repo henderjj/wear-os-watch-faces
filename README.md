@@ -35,6 +35,16 @@ Watch faces for Wear OS, built with Claude, along with the guides and scripts us
 
 **Install a face on the watch.** Open its folder (for example `faces/earth-day-night`) in Android Studio and follow [docs/install-on-galaxy-watch.md](docs/install-on-galaxy-watch.md).
 
+**Pair the watch for wireless debugging.** Turn on Developer options on the watch, then go to **Settings > Developer options > Wireless debugging** and tap **Pair new device**. It shows a 6-digit code and an `IP:port`. The watch and the PC must be on the same Wi-Fi network. Then pair in either of these ways:
+
+- **In Android Studio:** open the device drop-down in the toolbar, choose **Pair Devices Using Wi-Fi**, pick **Pair using pairing code**, select the watch and enter the code. Once paired, the watch appears as a run target whenever Wireless debugging is on.
+- **From the command line:** pair once, then connect using the port on the main **Wireless debugging** screen, which is different from the pairing port:
+  ```bash
+  adb pair <ip>:<pairing-port>    # enter the 6-digit code when asked
+  adb connect <ip>:<port>
+  ```
+  A watch connected with `adb` also appears in Android Studio's device drop-down. On Windows, `adb` is at `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe` if it isn't on your `PATH`.
+
 **Rebuild a face after changing its scripts** (Earth Day & Night as the example):
 ```bash
 pip install numpy pillow
