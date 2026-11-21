@@ -26,8 +26,8 @@ android {
         applicationId = "uk.earthface.daynight"
         minSdk = 33
         targetSdk = 33
-        versionCode = 6
-        versionName = "1.3.0"
+        versionCode = 7
+        versionName = "1.4.0"
     }
 
     buildTypes {
