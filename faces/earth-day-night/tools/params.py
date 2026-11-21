@@ -5,8 +5,14 @@ CANVAS = 450            # WFF canvas size
 CENTER = CANVAS / 2
 EARTH_R = 196           # Earth disk radius in canvas px
 EARTH_X = int(CENTER - EARTH_R)
-LAT0 = 0.0              # view centred on the equator
-LON0 = 0.0 
+# Views of the globe, offered by the "View" setting. Each one needs its own pair of
+# Earth images (about 385 KB of PNG); the day/night masks are shared by every view.
+# id: (name shown in Customise, latitude of the centre, longitude of the centre)
+VIEWS = {
+    "equator": ("Equator", 0.0, 0.0),
+    "cancer": ("Tropic of Cancer", 23.44, 0.0),
+}
+DEFAULT_VIEW = "equator"
 MASK_STEP_DEG = 5.0     # sun-elevation step between precomputed terminator masks
 MASK_COUNT = int(180 / MASK_STEP_DEG) + 1
 MASK_RES = EARTH_R      # masks are drawn at half resolution and scaled 2x (they are soft)

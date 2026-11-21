@@ -10,7 +10,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, SHARED)
 import wff_sim
 from solar import truth_mask
-from params import EARTH_R
+from params import EARTH_R, VIEWS
 
 XML, D, OUTDIR = sys.argv[1], sys.argv[2], sys.argv[3]
 # Limits for the day/night mask versus a precise solar calculation (fraction of full opacity).
@@ -22,15 +22,16 @@ cases = [  # local time, utc offset
     ("2026-10-08T23:02:00", 1), ("2026-06-21T12:00:00", 1), ("2026-06-21T23:59:00", 1),
     ("2026-12-21T09:00:00", 0), ("2026-12-21T16:00:00", 0), ("2026-03-20T06:10:00", 0),
 ]
-for iso, off in cases:
-    img, s = wff_sim.run(XML, D, iso, off)
-    img.save(f"{OUTDIR}/{iso[:16].replace(':', '-')}.png")
-    utc = dt.datetime.fromisoformat(iso).replace(tzinfo=dt.timezone.utc) - dt.timedelta(hours=off)
-    truth, inside = truth_mask(utc, 2 * EARTH_R)
-    got = wff_sim.captured["terminator"][..., 3]
-    err = np.abs(truth - got)[inside]
-    mean, p99 = err.mean(), np.percentile(err, 99)
-    ok = mean <= MAX_MEAN and p99 <= MAX_P99
-    failures += not ok
-    print(f"{iso} mean_err={mean:.3f} p99={p99:.3f}{'' if ok else '  <-- TOO FAR FROM TRUE SUN POSITION'}")
+for view, (name, lat0, lon0) in VIEWS.items():
+    for iso, off in cases:
+        img, s = wff_sim.run(XML, D, iso, off, {"view": view})
+        img.save(f"{OUTDIR}/{view}_{iso[:16].replace(':', '-')}.png")
+        utc = dt.datetime.fromisoformat(iso).replace(tzinfo=dt.timezone.utc) - dt.timedelta(hours=off)
+        truth, inside = truth_mask(utc, 2 * EARTH_R, lat0, lon0)
+        got = wff_sim.captured[f"terminator_{view}"][..., 3]
+        err = np.abs(truth - got)[inside]
+        mean, p99 = err.mean(), np.percentile(err, 99)
+        ok = mean <= MAX_MEAN and p99 <= MAX_P99
+        failures += not ok
+        print(f"{name:17} {iso} mean_err={mean:.3f} p99={p99:.3f}{'' if ok else '  <-- TOO FAR FROM TRUE SUN POSITION'}")
 sys.exit(1 if failures else 0)

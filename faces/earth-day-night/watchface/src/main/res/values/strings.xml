@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="watch_face_name">Earth Day &amp; Night</string>
+  <string name="cfg_view">View</string>
   <string name="cfg_hand_style">Hand style</string>
   <string name="cfg_hand_color">Hand colour</string>
   <string name="cfg_accent">Seconds hand colour</string>
   <string name="cfg_seconds">Seconds hand</string>
   <string name="cfg_date">Date</string>
+  <string name="view_equator">Equator</string>
+  <string name="view_cancer">Tropic of Cancer</string>
   <string name="style_dauphine">Dauphine</string>
   <string name="style_sword">Sword</string>
   <string name="style_baton">Baton</string>

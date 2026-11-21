@@ -1,10 +1,10 @@
 # Earth Day & Night
 
-An analogue watch face showing the Earth from space above the equator at Greenwich (0°N 0°E), with Europe and the UK towards the top. It shows daylight, dusk, and the night side with city lights as they are right now. The day/night line follows the real position of the Sun, including the seasons.
+An analogue watch face showing the Earth from space above Greenwich, centred on the equator (0°N 0°E) or, if you choose, the Tropic of Cancer (23.44°N 0°E), with Europe and the UK towards the top. It shows daylight, dusk, and the night side with city lights as they are right now. The day/night line follows the real position of the Sun, including the seasons.
 
 ![The face through the day](images/day-cycle.png)
 
-- **Version:** 1.2.2 (versionCode 5)
+- **Version:** 1.3.0 (versionCode 6)
 - **Package:** `uk.earthface.daynight`
 - **Watch Face Format:** version 1, so it runs on Wear OS 4 and later. Tested on a Galaxy Watch 6.
 
@@ -18,6 +18,7 @@ Long-press the face and tap **Customise**, or use the Galaxy Wearable app on you
 
 | Setting | Options |
 |---|---|
+| View | Equator, Tropic of Cancer (further north, so Europe and the North Atlantic sit higher and larger and the far south drops out of sight) |
 | Hand style | Dauphine, Sword (with lume insert), Baton, Skeleton (open, so you can see the Earth through it) |
 | Hand colour | White, Steel, Gold, Rose gold |
 | Seconds hand colour | Orange, Red, Yellow, Blue, White |
@@ -27,6 +28,8 @@ Long-press the face and tap **Customise**, or use the Galaxy Wearable app on you
 The date always uses English capitals (for example THU and 08 OCT), whatever language the watch is set to.
 
 ![Option combinations](images/options.png)
+
+![Equator view (left) and Tropic of Cancer view (right), at 13:00 BST on 21 June and 16:00 GMT on 21 December](images/views.png)
 
 ## What you'll see
 - **Daytime:** the sunlit half of the globe, with the boundary moving smoothly through the day. Around midday at Greenwich, almost the whole disk is lit.
