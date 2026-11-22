@@ -9,7 +9,7 @@ Reports:
     Customise screen closes when that setting is changed)
   - scene configurations that aren't declared in <UserConfigurations>, or are declared as another type
   - [CONFIGURATION.x.n] colour references to anything other than a ColorConfiguration
-  - resource="..." with no matching drawable, and drawables nothing uses
+  - resource="..." or icon="..." with no matching drawable, and drawables nothing uses
   - displayName strings missing from res/values/strings.xml
 Exits with status 1 if anything is reported.
 """
@@ -48,7 +48,7 @@ def lint(xml, res):
 
     drawables = {os.path.splitext(os.path.basename(f))[0]
                  for f in glob.glob(os.path.join(res, "drawable*", "*")) if os.path.isfile(f)}
-    refs = set(re.findall(r'resource="([A-Za-z0-9_]+)"', text))
+    refs = set(re.findall(r'(?:resource|icon)="([A-Za-z0-9_]+)"', text))
     info = os.path.join(res, "xml", "watch_face_info.xml")
     meta_refs = set(re.findall(r'@drawable/([A-Za-z0-9_]+)', open(info, encoding="utf-8").read())) if os.path.isfile(info) else set()
     problems += [f"missing drawable '{r}'" for r in sorted((refs | meta_refs) - drawables)]

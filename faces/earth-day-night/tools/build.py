@@ -44,6 +44,7 @@ def main():
     run("render_assets.py", os.path.abspath(a.day), os.path.abspath(a.night), ASSETS)
     run("hands.py", ASSETS)
     run("date_assets.py", os.path.abspath(a.font), ASSETS)
+    run("icons.py", os.path.abspath(a.font), ASSETS)
 
     for f in glob.glob(os.path.join(DRAWABLE, "*.png")):
         os.remove(f)

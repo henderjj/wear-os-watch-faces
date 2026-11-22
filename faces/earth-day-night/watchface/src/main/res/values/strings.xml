@@ -6,6 +6,7 @@
   <string name="cfg_hand_color">Hand colour</string>
   <string name="cfg_accent">Seconds hand colour</string>
   <string name="cfg_seconds">Seconds hand</string>
+  <string name="cfg_stars">Stars</string>
   <string name="cfg_date">Date</string>
   <string name="view_cancer_120w">US West Coast</string>
   <string name="view_cancer_97w">Central US &amp; C. America</string>
