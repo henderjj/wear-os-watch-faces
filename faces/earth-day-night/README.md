@@ -4,7 +4,7 @@ An analogue watch face showing the Earth from space, with a choice of 15 views a
 
 ![The face through the day](images/day-cycle.png)
 
-- **Version:** 1.4.1 (versionCode 8)
+- **Version:** 1.4.2 (versionCode 9)
 - **Package:** `uk.earthface.daynight`
 - **Watch Face Format:** version 1, so it runs on Wear OS 4 and later. Tested on a Galaxy Watch 6.
 
@@ -25,8 +25,6 @@ Long-press the face and tap **Customise**, or use the Galaxy Wearable app on you
 | Seconds hand colour | Orange, Red, Yellow, Blue, White |
 | Seconds hand | On / Off |
 | Date | Day and date apart (day at 9 o'clock, date at 3), One window at 6, or Off |
-
-In Customise, each View option has an icon with the region's name over its globe, so you can tell the views apart. The dial itself shows no name.
 
 The date always uses English capitals (for example THU and 08 OCT), whatever language the watch is set to.
 
