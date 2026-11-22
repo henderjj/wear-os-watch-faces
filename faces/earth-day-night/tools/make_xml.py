@@ -148,9 +148,8 @@ date_xml = (f'<ListConfiguration id="dateStyle">\n'
             f'</ListConfiguration>')
 
 
-def list_cfg(cid, label, opts, prefix, icons=False):
-    icon = (lambda k: f' icon="icon_{k}"') if icons else (lambda k: "")
-    o = "\n".join(f'      <ListOption id="{k}" displayName="{prefix}_{k}" screenReaderText="{prefix}_{k}"{icon(k)} />'
+def list_cfg(cid, label, opts, prefix):
+    o = "\n".join(f'      <ListOption id="{k}" displayName="{prefix}_{k}" screenReaderText="{prefix}_{k}" />'
                    for k in opts)
     return (f'    <ListConfiguration id="{cid}" displayName="{label}" screenReaderText="{label}" '
             f'defaultValue="{DEFAULTS[cid]}">\n{o}\n    </ListConfiguration>')
@@ -163,7 +162,7 @@ def color_cfg(cid, label, opts, prefix):
 
 
 user_cfg = "\n".join([
-    list_cfg("view", "cfg_view", VIEWS, "view", icons=True),
+    list_cfg("view", "cfg_view", VIEWS, "view"),
     '    <BooleanConfiguration id="stars" displayName="cfg_stars" screenReaderText="cfg_stars" defaultValue="TRUE" />',
     list_cfg("handStyle", "cfg_hand_style", STYLES, "style"),
     color_cfg("handTint", "cfg_hand_color", METALS, "metal"),

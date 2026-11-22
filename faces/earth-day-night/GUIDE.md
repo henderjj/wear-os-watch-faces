@@ -6,7 +6,7 @@ An analogue Wear OS watch face showing the Earth from space, lit as it is right 
 
 *08:00, 13:00, 18:30 and 23:02 BST on 8 October 2026, rendered from the shipped XML.*
 
-**Current version:** 1.4.1 (versionCode 8)
+**Current version:** 1.4.2 (versionCode 9)
 
 For the general approach (working with an AI agent, the format's pitfalls, the check-and-test loop), see [docs/agentic-wear-os-watch-faces.md](../../docs/agentic-wear-os-watch-faces.md).
 
@@ -58,7 +58,7 @@ faces/earth-day-night/
 │           ├── raw/watchface.xml        the watch face (generated, about 700 KB)
 │           ├── values/strings.xml       names shown in Customise (generated)
 │           ├── xml/watch_face_info.xml  preview image + Editable=true
-│           └── drawable-nodpi/          156 PNGs (generated, about 6.2 MB)
+│           └── drawable-nodpi/          141 PNGs (generated, about 6.2 MB)
 └── gradle/, gradlew, settings.gradle.kts, build.gradle.kts   (from Google's SimpleAnalog sample)
 ```
 
@@ -128,7 +128,7 @@ The **View** setting (`view`) picks where the globe is centred. Each view is a `
 | Equator | Amazon (60°W), **West & Central Africa (0°, default)**, East Africa (37°E), Southern Asia (78°E), South-East Asia (110°E) |
 | Tropic of Capricorn | South America (60°W), Southern Africa (20°E), Australia & NZ (152°E) |
 
-Each `ListOption` of `view` in `UserConfigurations` has an **icon** (`icon_<view>`, 160×160): the view's globe, dimmed, with the region name on top in Barlow Condensed capitals. The Galaxy Watch 6's Customise screen didn't show the option names alone, so the icons carry them. `tools/icons.py` draws them from `VIEWS` and the day Earth images; the dial doesn't change. `wff_lint.py` counts `icon="…"` as a drawable reference.
+**Region names in Customise.** Each View option has a `displayName` and `screenReaderText`, the format's own way to name options (the other is an option `icon`). On the Galaxy Watch 6, Customise shows neither for this setting: names were tried in 1.4.0 and icons in 1.4.1, so you pick a view by the globe itself. By choice, the dial carries no region label.
 
 The ids `equator` (0°N 0°E) and `cancer` (23.44°N 0°E) are kept from 1.3, so a view chosen in 1.3 stays chosen after the upgrade.
 
@@ -218,11 +218,10 @@ This takes about two and a half minutes, most of it checking the day/night line 
 1. renders the Earth, masks, starfield, glow and dial (`render_assets.py`)
 2. renders the hands, cap and seconds artwork (`hands.py`)
 3. renders the date frames, words and digits, and writes the layout (`date_assets.py`)
-4. renders the View icons (`icons.py`)
-5. replaces everything in `drawable-nodpi/`
-6. generates `watchface.xml` and `strings.xml` (`make_xml.py`)
-7. renders `preview.png` with the default settings at 10:08:32
-8. runs the checks (5.3)
+4. replaces everything in `drawable-nodpi/`
+5. generates `watchface.xml` and `strings.xml` (`make_xml.py`)
+6. renders `preview.png` with the default settings at 10:08:32
+7. runs the checks (5.3)
 
 Rebuilding from unchanged inputs reproduces the shipped files exactly: identical XML and pixel-identical images.
 
@@ -278,6 +277,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 |---|---|
 | 1.0.0 | Earth over London; layered day/night with sun-position maths; Dauphine hands; always-on mode |
 | 1.1.0 | View centred on the equator; day/date windows; settings for hand style, hand colour, seconds colour, seconds on/off and date layout |
+| 1.4.2 | Removed the View option icons: the Galaxy Watch 6's Customise screen doesn't show them. Stars stays. |
 | 1.4.1 | Each View option in Customise has an icon with the region's name over its globe, so you can tell the views apart. New **Stars** setting turns the starfield off, leaving plain black around the globe. |
 | 1.4.0 | **View** now offers 15 regions around the world, each centred on the Tropic of Cancer, the equator or the Tropic of Capricorn (3.4). The 1.3 views keep their ids: Equator is now called West & Central Africa, and Tropic of Cancer is now Europe & N. Africa. |
 | 1.3.0 | New **View** setting: centre the globe on the equator (as before, the default) or on the Tropic of Cancer at 23.44°N. The views share the day/night masks; each has its own pair of Earth images. Earth images are now named `earth_day_<view>` and `earth_night_<view>`. |

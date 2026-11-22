@@ -25,21 +25,21 @@
   <Metadata key="PREVIEW_TIME" value="10:08:32" />
   <UserConfigurations>
     <ListConfiguration id="view" displayName="cfg_view" screenReaderText="cfg_view" defaultValue="equator">
-      <ListOption id="cancer_120w" displayName="view_cancer_120w" screenReaderText="view_cancer_120w" icon="icon_cancer_120w" />
-      <ListOption id="cancer_97w" displayName="view_cancer_97w" screenReaderText="view_cancer_97w" icon="icon_cancer_97w" />
-      <ListOption id="cancer_77w" displayName="view_cancer_77w" screenReaderText="view_cancer_77w" icon="icon_cancer_77w" />
-      <ListOption id="cancer" displayName="view_cancer" screenReaderText="view_cancer" icon="icon_cancer" />
-      <ListOption id="cancer_40e" displayName="view_cancer_40e" screenReaderText="view_cancer_40e" icon="icon_cancer_40e" />
-      <ListOption id="cancer_78e" displayName="view_cancer_78e" screenReaderText="view_cancer_78e" icon="icon_cancer_78e" />
-      <ListOption id="cancer_115e" displayName="view_cancer_115e" screenReaderText="view_cancer_115e" icon="icon_cancer_115e" />
-      <ListOption id="equator_60w" displayName="view_equator_60w" screenReaderText="view_equator_60w" icon="icon_equator_60w" />
-      <ListOption id="equator" displayName="view_equator" screenReaderText="view_equator" icon="icon_equator" />
-      <ListOption id="equator_37e" displayName="view_equator_37e" screenReaderText="view_equator_37e" icon="icon_equator_37e" />
-      <ListOption id="equator_78e" displayName="view_equator_78e" screenReaderText="view_equator_78e" icon="icon_equator_78e" />
-      <ListOption id="equator_110e" displayName="view_equator_110e" screenReaderText="view_equator_110e" icon="icon_equator_110e" />
-      <ListOption id="capricorn_60w" displayName="view_capricorn_60w" screenReaderText="view_capricorn_60w" icon="icon_capricorn_60w" />
-      <ListOption id="capricorn_20e" displayName="view_capricorn_20e" screenReaderText="view_capricorn_20e" icon="icon_capricorn_20e" />
-      <ListOption id="capricorn_152e" displayName="view_capricorn_152e" screenReaderText="view_capricorn_152e" icon="icon_capricorn_152e" />
+      <ListOption id="cancer_120w" displayName="view_cancer_120w" screenReaderText="view_cancer_120w" />
+      <ListOption id="cancer_97w" displayName="view_cancer_97w" screenReaderText="view_cancer_97w" />
+      <ListOption id="cancer_77w" displayName="view_cancer_77w" screenReaderText="view_cancer_77w" />
+      <ListOption id="cancer" displayName="view_cancer" screenReaderText="view_cancer" />
+      <ListOption id="cancer_40e" displayName="view_cancer_40e" screenReaderText="view_cancer_40e" />
+      <ListOption id="cancer_78e" displayName="view_cancer_78e" screenReaderText="view_cancer_78e" />
+      <ListOption id="cancer_115e" displayName="view_cancer_115e" screenReaderText="view_cancer_115e" />
+      <ListOption id="equator_60w" displayName="view_equator_60w" screenReaderText="view_equator_60w" />
+      <ListOption id="equator" displayName="view_equator" screenReaderText="view_equator" />
+      <ListOption id="equator_37e" displayName="view_equator_37e" screenReaderText="view_equator_37e" />
+      <ListOption id="equator_78e" displayName="view_equator_78e" screenReaderText="view_equator_78e" />
+      <ListOption id="equator_110e" displayName="view_equator_110e" screenReaderText="view_equator_110e" />
+      <ListOption id="capricorn_60w" displayName="view_capricorn_60w" screenReaderText="view_capricorn_60w" />
+      <ListOption id="capricorn_20e" displayName="view_capricorn_20e" screenReaderText="view_capricorn_20e" />
+      <ListOption id="capricorn_152e" displayName="view_capricorn_152e" screenReaderText="view_capricorn_152e" />
     </ListConfiguration>
     <BooleanConfiguration id="stars" displayName="cfg_stars" screenReaderText="cfg_stars" defaultValue="TRUE" />
     <ListConfiguration id="handStyle" displayName="cfg_hand_style" screenReaderText="cfg_hand_style" defaultValue="dauphine">
