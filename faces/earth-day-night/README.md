@@ -4,7 +4,7 @@ An analogue watch face showing the Earth from space, with a choice of 15 views a
 
 ![The face through the day](images/day-cycle.png)
 
-- **Version:** 1.4.0 (versionCode 7)
+- **Version:** 1.4.1 (versionCode 8)
 - **Package:** `uk.earthface.daynight`
 - **Watch Face Format:** version 1, so it runs on Wear OS 4 and later. Tested on a Galaxy Watch 6.
 
@@ -19,11 +19,14 @@ Long-press the face and tap **Customise**, or use the Galaxy Wearable app on you
 | Setting | Options |
 |---|---|
 | View | **Tropic of Cancer:** US West Coast, Central US & C. America, US East Coast, Europe & N. Africa, E. Europe & Middle East, Russia & Central Asia, East Asia. **Equator:** Amazon, West & Central Africa (default), East Africa, Southern Asia, South-East Asia. **Tropic of Capricorn:** South America, Southern Africa, Australia & NZ |
+| Stars | On / Off (the starfield around the globe; Off leaves plain black) |
 | Hand style | Dauphine, Sword (with lume insert), Baton, Skeleton (open, so you can see the Earth through it) |
 | Hand colour | White, Steel, Gold, Rose gold |
 | Seconds hand colour | Orange, Red, Yellow, Blue, White |
 | Seconds hand | On / Off |
 | Date | Day and date apart (day at 9 o'clock, date at 3), One window at 6, or Off |
+
+In Customise, each View option has an icon with the region's name over its globe, so you can tell the views apart. The dial itself shows no name.
 
 The date always uses English capitals (for example THU and 08 OCT), whatever language the watch is set to.
 

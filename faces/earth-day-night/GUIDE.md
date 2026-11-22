@@ -6,7 +6,7 @@ An analogue Wear OS watch face showing the Earth from space, lit as it is right 
 
 *08:00, 13:00, 18:30 and 23:02 BST on 8 October 2026, rendered from the shipped XML.*
 
-**Current version:** 1.4.0 (versionCode 7)
+**Current version:** 1.4.1 (versionCode 8)
 
 For the general approach (working with an AI agent, the format's pitfalls, the check-and-test loop), see [docs/agentic-wear-os-watch-faces.md](../../docs/agentic-wear-os-watch-faces.md).
 
@@ -30,6 +30,7 @@ For the general approach (working with an AI agent, the format's pitfalls, the c
 | Setting | Type | Options (default first) |
 |---|---|---|
 | View | List `view` | West & Central Africa (0°N 0°E), then the other 14 in 3.4 |
+| Stars | Boolean `stars` | On, Off |
 | Hand style | List `handStyle` | Dauphine, Sword (with lume insert), Baton, Skeleton (open frame) |
 | Hand colour | Colour `handTint` | White, Steel, Gold, Rose gold |
 | Seconds hand colour | Colour `accentTint` | Orange, Red, Yellow, Blue, White |
@@ -57,7 +58,7 @@ faces/earth-day-night/
 │           ├── raw/watchface.xml        the watch face (generated, about 700 KB)
 │           ├── values/strings.xml       names shown in Customise (generated)
 │           ├── xml/watch_face_info.xml  preview image + Editable=true
-│           └── drawable-nodpi/          141 PNGs (generated, about 6.2 MB)
+│           └── drawable-nodpi/          156 PNGs (generated, about 6.2 MB)
 └── gradle/, gradlew, settings.gradle.kts, build.gradle.kts   (from Google's SimpleAnalog sample)
 ```
 
@@ -71,7 +72,7 @@ faces/earth-day-night/
 
 | # | Layer | Images | Always-on |
 |---|---|---|---|
-| 1 | Starfield | `space` | hidden |
+| 1 | Starfield, if `stars` is on | `space` | hidden |
 | 2 | Atmosphere glow at the limb | `atmosphere` | 25% |
 | 3 | **Night Earth**, by `view`: city lights, dimmed continents | `earth_night_<view>` (392×392) | 55% |
 | 4 | **Day Earth**, by `view`, clipped by the terminator mask (3.3) | `earth_day_<view>` + `mask_00`…`mask_36` | hidden |
@@ -126,6 +127,8 @@ The **View** setting (`view`) picks where the globe is centred. Each view is a `
 | Tropic of Cancer | US West Coast (120°W), Central US & C. America (97°W), US East Coast (77°W), Europe & N. Africa (0°), E. Europe & Middle East (40°E), Russia & Central Asia (78°E), East Asia (115°E) |
 | Equator | Amazon (60°W), **West & Central Africa (0°, default)**, East Africa (37°E), Southern Asia (78°E), South-East Asia (110°E) |
 | Tropic of Capricorn | South America (60°W), Southern Africa (20°E), Australia & NZ (152°E) |
+
+Each `ListOption` of `view` in `UserConfigurations` has an **icon** (`icon_<view>`, 160×160): the view's globe, dimmed, with the region name on top in Barlow Condensed capitals. The Galaxy Watch 6's Customise screen didn't show the option names alone, so the icons carry them. `tools/icons.py` draws them from `VIEWS` and the day Earth images; the dial doesn't change. `wff_lint.py` counts `icon="…"` as a drawable reference.
 
 The ids `equator` (0°N 0°E) and `cancer` (23.44°N 0°E) are kept from 1.3, so a view chosen in 1.3 stays chosen after the upgrade.
 
@@ -215,10 +218,11 @@ This takes about two and a half minutes, most of it checking the day/night line 
 1. renders the Earth, masks, starfield, glow and dial (`render_assets.py`)
 2. renders the hands, cap and seconds artwork (`hands.py`)
 3. renders the date frames, words and digits, and writes the layout (`date_assets.py`)
-4. replaces everything in `drawable-nodpi/`
-5. generates `watchface.xml` and `strings.xml` (`make_xml.py`)
-6. renders `preview.png` with the default settings at 10:08:32
-7. runs the checks (5.3)
+4. renders the View icons (`icons.py`)
+5. replaces everything in `drawable-nodpi/`
+6. generates `watchface.xml` and `strings.xml` (`make_xml.py`)
+7. renders `preview.png` with the default settings at 10:08:32
+8. runs the checks (5.3)
 
 Rebuilding from unchanged inputs reproduces the shipped files exactly: identical XML and pixel-identical images.
 
@@ -274,6 +278,7 @@ All of these mean editing a file in `tools/` and then running `build.py`. Increa
 |---|---|
 | 1.0.0 | Earth over London; layered day/night with sun-position maths; Dauphine hands; always-on mode |
 | 1.1.0 | View centred on the equator; day/date windows; settings for hand style, hand colour, seconds colour, seconds on/off and date layout |
+| 1.4.1 | Each View option in Customise has an icon with the region's name over its globe, so you can tell the views apart. New **Stars** setting turns the starfield off, leaving plain black around the globe. |
 | 1.4.0 | **View** now offers 15 regions around the world, each centred on the Tropic of Cancer, the equator or the Tropic of Capricorn (3.4). The 1.3 views keep their ids: Equator is now called West & Central Africa, and Tropic of Cancer is now Europe & N. Africa. |
 | 1.3.0 | New **View** setting: centre the globe on the equator (as before, the default) or on the Tropic of Cancer at 23.44°N. The views share the day/night masks; each has its own pair of Earth images. Earth images are now named `earth_day_<view>` and `earth_night_<view>`. |
 | 1.2.2 | Rebuilt the hand and date-digit images with Pillow 13, which resizes transparent images slightly differently. Edges of the date digits lose a faint dark fringe; nothing else looks different. |

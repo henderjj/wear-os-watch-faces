@@ -18,7 +18,7 @@ layout = json.load(open(os.path.join(GEN, "date_layout.json")))
 D = 2 * EARTH_R
 C = CANVAS / 2
 
-DEFAULTS = {"view": DEFAULT_VIEW, "handStyle": "dauphine", "handTint": "0", "accentTint": "0", "seconds": "TRUE", "dateStyle": "split"}
+DEFAULTS = {"view": DEFAULT_VIEW, "handStyle": "dauphine", "handTint": "0", "accentTint": "0", "seconds": "TRUE", "dateStyle": "split", "stars": "TRUE"}
 DATE_STYLES = {"split": "Day and date apart", "single": "One window at 6", "off": "Off"}
 
 strings = {
@@ -28,6 +28,7 @@ strings = {
     "cfg_hand_color": "Hand colour",
     "cfg_accent": "Seconds hand colour",
     "cfg_seconds": "Seconds hand",
+    "cfg_stars": "Stars",
     "cfg_date": "Date",
 }
 for k, (v, _, _) in VIEWS.items():
@@ -147,8 +148,10 @@ date_xml = (f'<ListConfiguration id="dateStyle">\n'
             f'</ListConfiguration>')
 
 
-def list_cfg(cid, label, opts, prefix):
-    o = "\n".join(f'      <ListOption id="{k}" displayName="{prefix}_{k}" />' for k in opts)
+def list_cfg(cid, label, opts, prefix, icons=False):
+    icon = (lambda k: f' icon="icon_{k}"') if icons else (lambda k: "")
+    o = "\n".join(f'      <ListOption id="{k}" displayName="{prefix}_{k}" screenReaderText="{prefix}_{k}"{icon(k)} />'
+                   for k in opts)
     return (f'    <ListConfiguration id="{cid}" displayName="{label}" screenReaderText="{label}" '
             f'defaultValue="{DEFAULTS[cid]}">\n{o}\n    </ListConfiguration>')
 
@@ -160,7 +163,8 @@ def color_cfg(cid, label, opts, prefix):
 
 
 user_cfg = "\n".join([
-    list_cfg("view", "cfg_view", VIEWS, "view"),
+    list_cfg("view", "cfg_view", VIEWS, "view", icons=True),
+    '    <BooleanConfiguration id="stars" displayName="cfg_stars" screenReaderText="cfg_stars" defaultValue="TRUE" />',
     list_cfg("handStyle", "cfg_hand_style", STYLES, "style"),
     color_cfg("handTint", "cfg_hand_color", METALS, "metal"),
     color_cfg("accentTint", "cfg_accent", ACCENTS, "accent"),
@@ -228,7 +232,7 @@ xml = f'''<?xml version="1.0" encoding="utf-8"?>
   The Sun's position is computed from UTC time and the day of the year:
   declination (season) plus the equation of time.
 
-  Customisation (long-press the face > Customise): view, hand style, hand colour,
+  Customisation (long-press the face > Customise): view, stars, hand style, hand colour,
   seconds hand colour, seconds hand on/off, and date layout.
 
   Imagery: NASA Blue Marble and NASA Earth at Night (public domain).
@@ -242,11 +246,15 @@ xml = f'''<?xml version="1.0" encoding="utf-8"?>
   </UserConfigurations>
   <Scene backgroundColor="#000000">
 
-    <!-- Starfield -->
-    <PartImage x="0" y="0" width="{CANVAS}" height="{CANVAS}">
-      <Variant mode="AMBIENT" target="alpha" value="0" />
-      <Image resource="space" />
-    </PartImage>
+    <!-- Starfield, if the stars setting is on -->
+    <BooleanConfiguration id="stars">
+      <BooleanOption id="TRUE">
+        <PartImage x="0" y="0" width="{CANVAS}" height="{CANVAS}">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <Image resource="space" />
+        </PartImage>
+      </BooleanOption>
+    </BooleanConfiguration>
 
     <!-- Thin atmosphere glow around the limb -->
     <PartImage x="0" y="0" width="{CANVAS}" height="{CANVAS}">

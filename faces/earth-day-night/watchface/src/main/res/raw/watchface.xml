@@ -14,7 +14,7 @@
   The Sun's position is computed from UTC time and the day of the year:
   declination (season) plus the equation of time.
 
-  Customisation (long-press the face > Customise): view, hand style, hand colour,
+  Customisation (long-press the face > Customise): view, stars, hand style, hand colour,
   seconds hand colour, seconds hand on/off, and date layout.
 
   Imagery: NASA Blue Marble and NASA Earth at Night (public domain).
@@ -25,27 +25,28 @@
   <Metadata key="PREVIEW_TIME" value="10:08:32" />
   <UserConfigurations>
     <ListConfiguration id="view" displayName="cfg_view" screenReaderText="cfg_view" defaultValue="equator">
-      <ListOption id="cancer_120w" displayName="view_cancer_120w" />
-      <ListOption id="cancer_97w" displayName="view_cancer_97w" />
-      <ListOption id="cancer_77w" displayName="view_cancer_77w" />
-      <ListOption id="cancer" displayName="view_cancer" />
-      <ListOption id="cancer_40e" displayName="view_cancer_40e" />
-      <ListOption id="cancer_78e" displayName="view_cancer_78e" />
-      <ListOption id="cancer_115e" displayName="view_cancer_115e" />
-      <ListOption id="equator_60w" displayName="view_equator_60w" />
-      <ListOption id="equator" displayName="view_equator" />
-      <ListOption id="equator_37e" displayName="view_equator_37e" />
-      <ListOption id="equator_78e" displayName="view_equator_78e" />
-      <ListOption id="equator_110e" displayName="view_equator_110e" />
-      <ListOption id="capricorn_60w" displayName="view_capricorn_60w" />
-      <ListOption id="capricorn_20e" displayName="view_capricorn_20e" />
-      <ListOption id="capricorn_152e" displayName="view_capricorn_152e" />
+      <ListOption id="cancer_120w" displayName="view_cancer_120w" screenReaderText="view_cancer_120w" icon="icon_cancer_120w" />
+      <ListOption id="cancer_97w" displayName="view_cancer_97w" screenReaderText="view_cancer_97w" icon="icon_cancer_97w" />
+      <ListOption id="cancer_77w" displayName="view_cancer_77w" screenReaderText="view_cancer_77w" icon="icon_cancer_77w" />
+      <ListOption id="cancer" displayName="view_cancer" screenReaderText="view_cancer" icon="icon_cancer" />
+      <ListOption id="cancer_40e" displayName="view_cancer_40e" screenReaderText="view_cancer_40e" icon="icon_cancer_40e" />
+      <ListOption id="cancer_78e" displayName="view_cancer_78e" screenReaderText="view_cancer_78e" icon="icon_cancer_78e" />
+      <ListOption id="cancer_115e" displayName="view_cancer_115e" screenReaderText="view_cancer_115e" icon="icon_cancer_115e" />
+      <ListOption id="equator_60w" displayName="view_equator_60w" screenReaderText="view_equator_60w" icon="icon_equator_60w" />
+      <ListOption id="equator" displayName="view_equator" screenReaderText="view_equator" icon="icon_equator" />
+      <ListOption id="equator_37e" displayName="view_equator_37e" screenReaderText="view_equator_37e" icon="icon_equator_37e" />
+      <ListOption id="equator_78e" displayName="view_equator_78e" screenReaderText="view_equator_78e" icon="icon_equator_78e" />
+      <ListOption id="equator_110e" displayName="view_equator_110e" screenReaderText="view_equator_110e" icon="icon_equator_110e" />
+      <ListOption id="capricorn_60w" displayName="view_capricorn_60w" screenReaderText="view_capricorn_60w" icon="icon_capricorn_60w" />
+      <ListOption id="capricorn_20e" displayName="view_capricorn_20e" screenReaderText="view_capricorn_20e" icon="icon_capricorn_20e" />
+      <ListOption id="capricorn_152e" displayName="view_capricorn_152e" screenReaderText="view_capricorn_152e" icon="icon_capricorn_152e" />
     </ListConfiguration>
+    <BooleanConfiguration id="stars" displayName="cfg_stars" screenReaderText="cfg_stars" defaultValue="TRUE" />
     <ListConfiguration id="handStyle" displayName="cfg_hand_style" screenReaderText="cfg_hand_style" defaultValue="dauphine">
-      <ListOption id="dauphine" displayName="style_dauphine" />
-      <ListOption id="sword" displayName="style_sword" />
-      <ListOption id="baton" displayName="style_baton" />
-      <ListOption id="skeleton" displayName="style_skeleton" />
+      <ListOption id="dauphine" displayName="style_dauphine" screenReaderText="style_dauphine" />
+      <ListOption id="sword" displayName="style_sword" screenReaderText="style_sword" />
+      <ListOption id="baton" displayName="style_baton" screenReaderText="style_baton" />
+      <ListOption id="skeleton" displayName="style_skeleton" screenReaderText="style_skeleton" />
     </ListConfiguration>
     <ColorConfiguration id="handTint" displayName="cfg_hand_color" screenReaderText="cfg_hand_color" defaultValue="0">
       <ColorOption id="0" displayName="metal_0" colors="#FFFFFFFF" />
@@ -62,18 +63,22 @@
     </ColorConfiguration>
     <BooleanConfiguration id="seconds" displayName="cfg_seconds" screenReaderText="cfg_seconds" defaultValue="TRUE" />
     <ListConfiguration id="dateStyle" displayName="cfg_date" screenReaderText="cfg_date" defaultValue="split">
-      <ListOption id="split" displayName="date_split" />
-      <ListOption id="single" displayName="date_single" />
-      <ListOption id="off" displayName="date_off" />
+      <ListOption id="split" displayName="date_split" screenReaderText="date_split" />
+      <ListOption id="single" displayName="date_single" screenReaderText="date_single" />
+      <ListOption id="off" displayName="date_off" screenReaderText="date_off" />
     </ListConfiguration>
   </UserConfigurations>
   <Scene backgroundColor="#000000">
 
-    <!-- Starfield -->
-    <PartImage x="0" y="0" width="450" height="450">
-      <Variant mode="AMBIENT" target="alpha" value="0" />
-      <Image resource="space" />
-    </PartImage>
+    <!-- Starfield, if the stars setting is on -->
+    <BooleanConfiguration id="stars">
+      <BooleanOption id="TRUE">
+        <PartImage x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <Image resource="space" />
+        </PartImage>
+      </BooleanOption>
+    </BooleanConfiguration>
 
     <!-- Thin atmosphere glow around the limb -->
     <PartImage x="0" y="0" width="450" height="450">
